@@ -1,0 +1,32 @@
+{
+  "name": "bomberman-firebase",
+  "version": "1.0.0",
+  "description": "",
+  "main": "webpack.config.js",
+  "dependencies": {
+    "babel": "^6.23.0",
+    "babel-core": "^6.25.0",
+    "babel-loader": "^7.0.0",
+    "d3": "^4.9.1",
+    "jquery": "^3.2.1",
+    "material-design-lite": "^1.3.0",
+    "webpack": "^2.6.1",
+    "webpack-dev-server": "^2.4.5",
+    "webpack-merge": "^4.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "webpack-dev-server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tetrashine/bomberman-firebase.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tetrashine/bomberman-firebase/issues"
+  },
+  "homepage": "https://github.com/tetrashine/bomberman-firebase#readme"
+}
