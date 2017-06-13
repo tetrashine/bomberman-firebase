@@ -1,7 +1,8 @@
 
 import Map from 'app/components/map';
-import Coord from 'app/util/coord';
+import Coord from 'app/data/coordinates';
 import Bomberman from 'app/components/bomberman';
+import Direction from 'app/data/direction';
 
 export default class Engine {
     constructor(ui, db) {
@@ -50,7 +51,8 @@ export default class Engine {
     }
 
     getEmptyPoint() {
-        return new Coord(1, 1);
+        let val = 1 * this.ui.getCellPixel();
+        return new Coord(val, val);
     }
 
     engineInterval() {
@@ -94,5 +96,57 @@ export default class Engine {
 
     moveCharacters(dt) {
 
+    }
+
+    changeDirection(direction) {
+        if( !this.isGameStarted() ) { return; }
+        let player = this.player;
+
+        if(player) {
+            switch(direction)
+            {
+                case Direction.UP:
+                    player.up = true;
+                    break;
+                case Direction.DOWN:
+                    player.down = true;
+                    break;
+                case Direction.LEFT:
+                    player.left = true;
+                    break;
+                case Direction.RIGHT:
+                    player.right = true;
+                    break;
+                default:
+                    break;
+            }
+            console.log(player);
+        }
+    }
+
+    stopDirection(direction) {
+        if( !this.isGameStarted() ) { return; }
+        let player = this.player;
+
+        if(player) {
+            switch(direction)
+            {
+                case Direction.UP:
+                    player.up = false;
+                    break;
+                case Direction.DOWN:
+                    player.down = false;
+                    break;
+                case Direction.LEFT:
+                    player.left = false;
+                    break;
+                case Direction.RIGHT:
+                    player.right = false;
+                    break;
+                default:
+                    break;
+            }
+            console.log(player);
+        }
     }
 }

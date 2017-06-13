@@ -9,7 +9,15 @@ export default class Bomberman {
         let image = new Image();
         image.src = isSelf ? "/img/selfbomberman.png" : "/img/oppbomberman.png";
         this.image = image;
+
+        // Coordinates
         this.coord = coord;
+
+        // Movement related
+        this.up			= false;
+		this.down		= false;
+		this.left		= false;
+		this.right		= false;
 
         // Game Object
 		this.height		= 32;

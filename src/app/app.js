@@ -4,6 +4,7 @@
 import UI from 'app/base/ui';
 import Engine from 'app/base/engine';
 import Firebase from 'app/base/db/firebase';
+import Keyboard from 'app/input/keyboard';
 
 export default class BombermanFirebase {
 
@@ -18,6 +19,8 @@ export default class BombermanFirebase {
             new UI('board'),
             new Firebase()
         );
+
+        new Keyboard(this.engine);
     }
 
     init() {

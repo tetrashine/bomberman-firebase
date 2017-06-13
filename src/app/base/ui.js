@@ -59,7 +59,7 @@ export default class UI {
     drawMapObjects(mapObjs) {
         let canvas = this.canvas;
         mapObjs.forEach((mapObj, i) => {
-            canvas.drawImage(mapObj.getImage(), 0, 0, mapObj.getWidth(), mapObj.getHeight(), 0, 0, mapObj.getWidth(), mapObj.getHeight());
+            canvas.drawImage(mapObj.getImage(), 0, 0, mapObj.getWidth(), mapObj.getHeight(), mapObj.getX(), mapObj.getY(), mapObj.getWidth(), mapObj.getHeight());
         });
     }
 }
