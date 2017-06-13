@@ -1,3 +1,5 @@
+import Bomberman from 'app/app';
+
 firebase.auth().onAuthStateChanged(function(user) {
     let dialog = document.querySelector('#loginDialog');
     if (user) {
@@ -40,3 +42,5 @@ $("#signOutBtn").click(() => {
         alert(error.message);
     });
 });
+
+new Bomberman();

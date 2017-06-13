@@ -17,7 +17,7 @@ const common = {
             "node_modules",
             path.resolve(PATHS.app)
         ],
-		extensions: ['.js', '.jsx']
+		extensions: ['.js']
 	},
 	entry: {
 		app: path.join(PATHS.app, 'main.js')

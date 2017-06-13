@@ -17,3 +17,7 @@
 #loginProgress {
     display: none;
 }
+
+#game {
+    border: solid 1px #000;
+}
