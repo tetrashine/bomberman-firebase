@@ -11,6 +11,7 @@ export default class Engine {
         this.map = new Map();
         this.player = null;
         this.players = [];
+        this.playersById = {}
         this.gameStarted = false;
         this.setLastTiming();
 
@@ -34,21 +35,69 @@ export default class Engine {
     initGame() {
         //draw basemap
         this.ui.drawMap(this.map);
-        //add opponents
+        //register to add opponents
+        this.registerOpponentEvents();
         //add self
-        this.addPlayer(this.db.getMyId(), true);
+        this.addPlayer(this.db.getMyId(), this.getEmptyPoint(), true);
     }
 
-    addPlayer(uid, isSelf) {
-        let coord = this.getEmptyPoint();
+    registerOpponentEvents() {
+        this.db.getExistingPlayers((data) => {
+            let key = data.key;
+            let rawCoord = data.coord;
+            let coord = new Coord(rawCoord.x, rawCoord.y);
+            this.addPlayer(key, coord);
+        });
+
+        this.db.onNewPlayer((data) => {
+            let id = data.key;
+            let rawCoord = data.val().coord;
+            let coord = new Coord(rawCoord.x, rawCoord.y);
+            this.addPlayer(id, coord);
+        });
+
+        this.db.onPlayerMove((data) => {
+            let id = data.key;
+            let rawCoord = data.val().coord;
+            let coord = new Coord(rawCoord.x, rawCoord.y);
+            this.updatePlayerPosition(id, coord);
+        });
+
+        this.db.onPlayerExit((data) => {
+            let id = data.key;
+            this.deletePlayerById(id);
+        });
+    }
+
+    deletePlayer(uid) {
+        delete this.playersById[uid];
+
+        let position = 0;
+        let players = this.players;
+        let length = players.length;
+
+		for (; position < length; position++) {
+			if (players[position].getId() === uid) {
+				players.splice(position, 1);
+                break;
+			}
+		}
+    }
+
+    addPlayer(uid, coord, isSelf=false) {
         let bomberman = new Bomberman(uid, coord, isSelf);
 
         this.players.push(bomberman);
+        this.playersById[uid] = bomberman;
 
         //keep reference to player bomberman
         if (isSelf) {
             this.player = bomberman;
         }
+    }
+
+    updatePlayerPosition(uid, coord) {
+        this.playersById[uid].setCoord(coord);
     }
 
     getEmptyPoint() {

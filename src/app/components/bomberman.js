@@ -53,6 +53,7 @@ export default class Bomberman {
         return planted;
     }
 
+    getId() { return this.playerId; }
     getX() { return this.coord.getX(); }
     getY() { return this.coord.getY(); }
     addX(val) { this.coord.addX(val); }
