@@ -77,6 +77,11 @@ export default class Engine {
 
     gameInterval(dt) {
         this.movePlayer(dt);
+        //save new player coord to firebase
+        let player = this.player;
+        if (player.hasUpdatedPosition()) {
+            this.db.savePlayerCoord(player.getCoord());
+        }
     }
 
     drawInterval(dt) {
@@ -99,6 +104,8 @@ export default class Engine {
     movePlayer(dt) {
         let player = this.player;
         let speed = Math.round(player.speed * dt) % (2*this.ui.getCellPixel());
+
+        player.resetPositionUpdate();
 
 		// Player can only be moving upwards or downwards at any 1 time.
 		// If both are pressed, going upwards take higher priority.

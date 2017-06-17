@@ -5,13 +5,13 @@ export default class Firebase extends Db {
     constructor() {
         super();
 
-        this.user = firebase.User;
+        this.user = firebase.auth().currentUser;
     }
 
     getMyId() { return this.user.uid; }
 
-    saveCoord(coord) {
-        firebase.database().ref('users/' + this.user.uid).set({
+    savePlayerCoord(coord) {
+        firebase.database().ref('users/' + this.getMyId()).set({
             coord: coord
         });
     }

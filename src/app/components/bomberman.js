@@ -36,6 +36,7 @@ export default class Bomberman {
 		this.down		= false;
 		this.left		= false;
 		this.right		= false;
+        this.updatedPosition = false;
     }
 
     respawn() {
@@ -62,5 +63,7 @@ export default class Bomberman {
     getImage() { return this.image; }
     getSpeed() { return this.speed; }
 
-    setCoord(newCoord) { this.coord = newCoord; }
+    hasUpdatedPosition() { return this.updatedPosition; }
+    resetPositionUpdate() { this.updatedPosition = false; }
+    setCoord(newCoord) { this.coord = newCoord; this.updatedPosition = true; }
 }

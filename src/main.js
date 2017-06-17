@@ -8,6 +8,9 @@ firebase.auth().onAuthStateChanged(function(user) {
         if (dialog.open) {
             dialog.close();
         }
+
+        //activate game
+        new Bomberman();
     } else {
         // No user is signed in.
         $("#loginCover").show();
@@ -42,5 +45,3 @@ $("#signOutBtn").click(() => {
         alert(error.message);
     });
 });
-
-new Bomberman();
