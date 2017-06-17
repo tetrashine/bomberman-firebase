@@ -29,4 +29,9 @@ export default class Map {
     getWidth() { return this.mapWidth; }
     getHeight() { return this.mapHeight; }
     getMap() { return this.map; }
+    getMapVal(coord) { return this.map[coord.getY()][coord.getX()]; }
+
+    walkable(coord) { return (this.getMapVal(coord) === 0); }
+    plantable(coord) { return (this.getMapVal(coord) === 0); }
+    canExplodeThru(coord) { return (this.getMapVal(coord) === 0); }
 }

@@ -62,4 +62,8 @@ export default class UI {
             canvas.drawImage(mapObj.getImage(), 0, 0, mapObj.getWidth(), mapObj.getHeight(), mapObj.getX(), mapObj.getY(), mapObj.getWidth(), mapObj.getHeight());
         });
     }
+
+    clearScreen() {
+        this.canvas.clearRect(0, 0, this.getFullWidth(), this.getFullHeight());
+    }
 }

@@ -37,16 +37,16 @@ export default class Keyboard {
     		switch(event.which)
     		{
     			case 38:	// UP
-    				engine.stopDirection(Direction.UP);
+    				engine.changeDirection(Direction.UP, false);
     				break;
     			case 40:	// DOWN
-    				engine.stopDirection(Direction.DOWN);
+    				engine.changeDirection(Direction.DOWN, false);
     				break;
     			case 37:	// LEFT
-    				engine.stopDirection(Direction.LEFT);
+    				engine.changeDirection(Direction.LEFT, false);
     				break;
     			case 39:	// RIGHT
-    				engine.stopDirection(Direction.RIGHT);
+    				engine.changeDirection(Direction.RIGHT, false);
     				break;
     			default:
     				break;

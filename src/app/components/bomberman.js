@@ -13,12 +13,6 @@ export default class Bomberman {
         // Coordinates
         this.coord = coord;
 
-        // Movement related
-        this.up			= false;
-		this.down		= false;
-		this.left		= false;
-		this.right		= false;
-
         // Game Object
 		this.height		= 32;
 		this.width		= 32;
@@ -60,7 +54,13 @@ export default class Bomberman {
 
     getX() { return this.coord.getX(); }
     getY() { return this.coord.getY(); }
+    addX(val) { this.coord.addX(val); }
+    addY(val) { this.coord.addY(val); }
+    getCoord() { return this.coord; }
     getWidth() { return this.width; }
     getHeight() { return this.height; }
     getImage() { return this.image; }
+    getSpeed() { return this.speed; }
+
+    setCoord(newCoord) { this.coord = newCoord; }
 }
