@@ -160,30 +160,22 @@ export default class Engine {
 		// Player can only be moving upwards or downwards at any 1 time.
 		// If both are pressed, going upwards take higher priority.
 		if(player.up) {
-			//player.currentType = Bomberman.ImageManager.UpMovement;
-			//animator.animate(players[i], dt);
-            player.animate(dt);
 			this.move(player, Direction.UP, speed);
 		} else if(player.down) {
-			//players[i].currentType = Bomberman.ImageManager.DownMovement;
-			//animator.animate(players[i], dt);
-            player.animate(dt);
 			this.move(player, Direction.DOWN, speed);
 		}
 
 		// Player can only be moving left or right at any 1 time.
 		// If both are pressed, going left take higher priority.
 		if(player.left) {
-			//players[i].currentType = Bomberman.ImageManager.LeftMovement;
-			//animator.animate(players[i], dt);
-            player.animate(dt);
 			this.move(player, Direction.LEFT, speed);
 		} else if(player.right) {
-			//players[i].currentType = Bomberman.ImageManager.RightMovement;
-			//animator.animate(players[i], dt);
-            player.animate(dt);
 			this.move(player, Direction.RIGHT, speed);
 		}
+
+        if (player.up || player.down || player.left || player.right) {
+            player.animate(dt);
+        }
     }
 
     move(player, direction, speed) {
