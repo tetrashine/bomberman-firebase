@@ -11,7 +11,8 @@ export default class Engine {
         this.map = new Map();
         this.player = null;
         this.players = [];
-        this.playersById = {}
+        this.playersById = {};
+        this.bombs = [];
         this.gameStarted = false;
         this.accumulatedTiming = 0;
         this.stepInterval = 0.016666666666667;
@@ -45,8 +46,25 @@ export default class Engine {
         this.addPlayer(this.db.getMyId(), this.getEmptyPoint(), true);
     }
 
+    plantBombByPlayer() {
+        let coord = this.player.getCoord();
+        let mapTile = this.mapToTileCoord(coord);
+
+        this.plantBomb(this.player, mapTile);
+    }
+
+    plantBomb(player, mapTile) {
+        if (this.map.plantable(mapTile) && player.plantBomb()) {
+            let bomb = player.getBomb();
+            bomb.setCoord(this.tileToMapCoord(this.mapToTileCoord(bomb.getCoord())));
+            this.bombs.push(bomb);
+            this.map.addObject(mapTile, bomb);
+        }
+    }
+
     printAllPlayers() {
         console.log(this.players);
+        console.log(this.map);
     }
 
     registerOpponentEvents() {
@@ -154,10 +172,10 @@ export default class Engine {
     }
 
     animateInterval(dt) {
-        this.players.forEach(player => {
-            if (!player.isCurrPlayer()) {
-                player.animate(dt);
-            }
+        [this.bombs, this.players].forEach(list => {
+            list.forEach(obj => {
+                obj.animate(dt);
+            });
         });
     }
 
@@ -174,6 +192,7 @@ export default class Engine {
         let framePerSec = Math.floor(1/dt);
         this.ui.writeFpsMessage("FPS:" + framePerSec);
         //draw bombs
+        this.ui.drawMapObjects(this.bombs);
         //draw explosion
         //draw players
         this.ui.drawMapObjects(this.players);
@@ -202,10 +221,6 @@ export default class Engine {
 		} else if(player.right) {
 			this.move(player, Direction.RIGHT, speed);
 		}
-
-        if (player.up || player.down || player.left || player.right) {
-            player.animate(dt);
-        }
     }
 
     move(player, direction, speed) {

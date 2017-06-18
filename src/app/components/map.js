@@ -22,14 +22,24 @@ export default class Map {
     		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
         ];
-		this.mapHeight = map.length;
-		this.mapWidth = map[0].length;
+		let height = this.mapHeight = map.length;
+		let width = this.mapWidth = map[0].length;
+
+        let mapObjs = this.mapObjs = [];
+        for(let i = 0; i < height; i++ ) {
+    		mapObjs[i] = [];
+    		for(let j = 0; j < width; j++ ) {
+    			mapObjs[i][j] = [];
+    		}
+    	}
     }
 
     getWidth() { return this.mapWidth; }
     getHeight() { return this.mapHeight; }
     getMap() { return this.map; }
     getMapVal(coord) { return this.map[coord.getY()][coord.getX()]; }
+
+    addObject(coord, obj) { this.mapObjs[coord.getY()][coord.getX()].push(obj); }
 
     walkable(coord) { return (this.getMapVal(coord) === 0); }
     plantable(coord) { return (this.getMapVal(coord) === 0); }

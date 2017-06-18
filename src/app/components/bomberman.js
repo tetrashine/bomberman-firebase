@@ -1,7 +1,9 @@
+import Bomb from 'app/components/bomb';
+import MapObject from 'app/components/mapobject';
 
-
-export default class Bomberman {
+export default class Bomberman extends MapObject {
     constructor(uid, coord, isSelf) {
+        super(coord);
         this.reset();
 
         this.playerId = uid;
@@ -12,13 +14,6 @@ export default class Bomberman {
         image.src = isSelf ? "/img/selfbomberman.png" : "/img/oppbomberman.png";
         this.image = image;
 
-        // Coordinates
-        this.coord = coord;
-
-        // Game Object
-		this.height		= 32;
-		this.width		= 32;
-
         // Bomb related
         this.bombStr = 8;
         this.bombs = 8;
@@ -27,13 +22,7 @@ export default class Bomberman {
         this.explodeDuration = 1;
 
         // Animation
-        this.sourceX = 0;
-        this.Fps = 8;
         this.totalFrames = 16;
-        this.currentFrame = 0;
-        this.framesPerType = 4;
-        this.timeBetweenFrames = 0.0625;
-        this.timeSinceLastFrame = 0.0625;
     }
 
     reset() {
@@ -64,16 +53,13 @@ export default class Bomberman {
         return planted;
     }
 
+    getBomb() {
+        return new Bomb(this.getCoord().copy(), this.bombStr, this.denotateTime, this.explodeDuration);
+    }
+
     isCurrPlayer() { return this.isSelf; }
     getId() { return this.playerId; }
-    getX() { return this.coord.getX(); }
-    getY() { return this.coord.getY(); }
-    addX(val) { this.coord.addX(val); }
-    addY(val) { this.coord.addY(val); }
-    getCoord() { return this.coord; }
-    getWidth() { return this.width; }
-    getHeight() { return this.height; }
-    getImage() { return this.image; }
+
     getSpeed() { return this.speed; }
 
     getType() {
@@ -93,20 +79,8 @@ export default class Bomberman {
     }
 
     animate(dt) {
-        //cumulative time since last animation
-        this.timeSinceLastFrame -= dt;
-        if (this.timeSinceLastFrame <= 0) {
-           this.timeSinceLastFrame += this.timeBetweenFrames;
-           this.currentFrame = (this.currentFrame + 1) % (this.framesPerType);
-           this.sourceX = (this.getType() * this.width * this.framesPerType) + (this.currentFrame * this.width);
+        if (this.up || this.down || this.left || this.right) {
+            super.animate(dt);
         }
     }
-
-    getSourceX() {
-        return this.sourceX;
-    }
-
-    hasUpdatedPosition() { return this.updatedPosition; }
-    resetPositionUpdate() { this.updatedPosition = false; }
-    setCoord(newCoord) { this.coord = newCoord; this.updatedPosition = true; }
 }

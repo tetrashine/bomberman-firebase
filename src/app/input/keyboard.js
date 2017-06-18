@@ -24,6 +24,7 @@ export default class Keyboard {
                     engine.printAllPlayers();
     				break;
     			case 13:	// Enter
+                    engine.plantBombByPlayer();
     				break;
     			case 32:	// SPACE
     				//plantBomb();
