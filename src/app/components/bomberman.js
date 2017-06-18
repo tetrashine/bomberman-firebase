@@ -6,6 +6,8 @@ export default class Bomberman {
 
         this.playerId = uid;
         this.name = "Player " + uid;
+        this.isSelf = isSelf;
+
         let image = new Image();
         image.src = isSelf ? "/img/selfbomberman.png" : "/img/oppbomberman.png";
         this.image = image;
@@ -62,6 +64,7 @@ export default class Bomberman {
         return planted;
     }
 
+    isCurrPlayer() { return this.isSelf; }
     getId() { return this.playerId; }
     getX() { return this.coord.getX(); }
     getY() { return this.coord.getY(); }

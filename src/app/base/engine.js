@@ -13,10 +13,14 @@ export default class Engine {
         this.players = [];
         this.playersById = {}
         this.gameStarted = false;
+        this.accumulatedTiming = 0;
+        this.stepInterval = 0.016666666666667;
         this.setLastTiming();
 
         this.engineInterval = this.engineInterval.bind(this);
     }
+
+    playerExist(id) { return (this.playersById[id]); }
 
     isGameStarted() { return this.gameStarted; }
     setLastTiming() { this.lastTiming = new Date().getTime(); }
@@ -41,19 +45,27 @@ export default class Engine {
         this.addPlayer(this.db.getMyId(), this.getEmptyPoint(), true);
     }
 
+    printAllPlayers() {
+        console.log(this.players);
+    }
+
     registerOpponentEvents() {
         this.db.getExistingPlayers((data) => {
             let key = data.key;
-            let rawCoord = data.coord;
-            let coord = new Coord(rawCoord.x, rawCoord.y);
-            this.addPlayer(key, coord);
+            if (!this.playerExist(key)) {
+                let rawCoord = data.coord;
+                let coord = new Coord(rawCoord.x, rawCoord.y);
+                this.addPlayer(key, coord);
+            }
         });
 
         this.db.onNewPlayer((data) => {
             let id = data.key;
-            let rawCoord = data.val().coord;
-            let coord = new Coord(rawCoord.x, rawCoord.y);
-            this.addPlayer(id, coord);
+            if (!this.playerExist(id)) {
+                let rawCoord = data.val().coord;
+                let coord = new Coord(rawCoord.x, rawCoord.y);
+                this.addPlayer(id, coord);
+            }
         });
 
         this.db.onPlayerMove((data) => {
@@ -109,13 +121,23 @@ export default class Engine {
         let thisTiming = new Date().getTime();
         let dt = ((thisTiming - this.getLastTiming()) / 1000);
 
-        //game interval
-        this.gameInterval(dt);
+        this.accumulatedTiming += dt;
+        if (this.accumulatedTiming > this.stepInterval) {
+            dt = this.accumulatedTiming;
 
-        //draw game
-        this.drawInterval(dt);
+            //game interval
+            this.gameInterval(dt);
 
-        this.setLastTiming();
+            //animation
+            this.animateInterval(dt);
+
+            //draw game
+            this.drawInterval(dt);
+
+            this.setLastTiming();
+
+            this.accumulatedTiming = 0;
+        }
 
         if (this.isGameStarted()) {
             requestAnimationFrame(this.engineInterval);
@@ -129,6 +151,14 @@ export default class Engine {
         if (player.hasUpdatedPosition()) {
             this.db.savePlayerCoord(player.getCoord());
         }
+    }
+
+    animateInterval(dt) {
+        this.players.forEach(player => {
+            if (!player.isCurrPlayer()) {
+                player.animate(dt);
+            }
+        });
     }
 
     drawInterval(dt) {

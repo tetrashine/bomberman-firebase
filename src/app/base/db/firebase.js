@@ -35,9 +35,9 @@ export default class Firebase extends Db {
 
     onPlayerMove(func) {
         this.database.ref(PLAYERS_PATH).on("child_changed", (data, prevChildKey) => {
-            //if () {
+            if (data.key != this.getMyId()) {
                 func(data);
-            //}
+            }
         });
     }
 

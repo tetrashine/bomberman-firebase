@@ -21,6 +21,7 @@ export default class Keyboard {
     				engine.changeDirection(Direction.RIGHT);
     				return false;
     			case 27:	// ESC
+                    engine.printAllPlayers();
     				break;
     			case 13:	// Enter
     				break;
