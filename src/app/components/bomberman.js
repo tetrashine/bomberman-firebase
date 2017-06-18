@@ -23,6 +23,15 @@ export default class Bomberman {
         this.bombsMax = this.bombs;
         this.denotateTime = 3;
         this.explodeDuration = 1;
+
+        // Animation
+        this.sourceX = 0;
+        this.Fps = 8;
+        this.totalFrames = 16;
+        this.currentFrame = 0;
+        this.framesPerType = 4;
+        this.timeBetweenFrames = 0.0625;
+        this.timeSinceLastFrame = 0.0625;
     }
 
     reset() {
@@ -63,6 +72,36 @@ export default class Bomberman {
     getHeight() { return this.height; }
     getImage() { return this.image; }
     getSpeed() { return this.speed; }
+
+    getType() {
+        let type = 0;
+        /*if (this.down) {
+            type 0
+        } else */
+        if (this.up) {
+            type = 1;
+        } else if (this.left) {
+            type = 2;
+        } else if (this.right) {
+            type = 3;
+        }
+
+        return type;
+    }
+
+    animate(dt) {
+        //cumulative time since last animation
+        this.timeSinceLastFrame -= dt;
+        if (this.timeSinceLastFrame <= 0) {
+           this.timeSinceLastFrame += this.timeBetweenFrames;
+           this.currentFrame = (this.currentFrame + 1) % (this.framesPerType);
+           this.sourceX = (this.getType() * this.width * this.framesPerType) + (this.currentFrame * this.width);
+        }
+    }
+
+    getSourceX() {
+        return this.sourceX;
+    }
 
     hasUpdatedPosition() { return this.updatedPosition; }
     resetPositionUpdate() { this.updatedPosition = false; }

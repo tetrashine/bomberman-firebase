@@ -59,11 +59,16 @@ export default class UI {
     drawMapObjects(mapObjs) {
         let canvas = this.canvas;
         mapObjs.forEach((mapObj, i) => {
-            canvas.drawImage(mapObj.getImage(), 0, 0, mapObj.getWidth(), mapObj.getHeight(), mapObj.getX(), mapObj.getY(), mapObj.getWidth(), mapObj.getHeight());
+            canvas.drawImage(mapObj.getImage(), mapObj.getSourceX(), 0, mapObj.getWidth(), mapObj.getHeight(), mapObj.getX(), mapObj.getY(), mapObj.getWidth(), mapObj.getHeight());
         });
     }
 
     clearScreen() {
         this.canvas.clearRect(0, 0, this.getFullWidth(), this.getFullHeight());
+    }
+
+    writeFpsMessage(message) {
+        this.canvas.font        = '14px sans-serif';
+        this.canvas.fillText(message, 10, 20);
     }
 }

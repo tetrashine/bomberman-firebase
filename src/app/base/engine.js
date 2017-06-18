@@ -106,10 +106,8 @@ export default class Engine {
     }
 
     engineInterval() {
-        //fps
         let thisTiming = new Date().getTime();
         let dt = ((thisTiming - this.getLastTiming()) / 1000);
-        let framePerSec = Math.round(1/dt*100)/100;
 
         //game interval
         this.gameInterval(dt);
@@ -134,14 +132,17 @@ export default class Engine {
     }
 
     drawInterval(dt) {
-        this.drawGame();
+        this.drawGame(dt);
 
         this.drawScore();
     }
 
-    drawGame() {
+    drawGame(dt) {
         //clear ui
         this.ui.clearScreen();
+        //draw fps
+        let framePerSec = Math.floor(1/dt);
+        this.ui.writeFpsMessage("FPS:" + framePerSec);
         //draw bombs
         //draw explosion
         //draw players
@@ -161,12 +162,12 @@ export default class Engine {
 		if(player.up) {
 			//player.currentType = Bomberman.ImageManager.UpMovement;
 			//animator.animate(players[i], dt);
-
+            player.animate(dt);
 			this.move(player, Direction.UP, speed);
 		} else if(player.down) {
 			//players[i].currentType = Bomberman.ImageManager.DownMovement;
 			//animator.animate(players[i], dt);
-
+            player.animate(dt);
 			this.move(player, Direction.DOWN, speed);
 		}
 
@@ -175,12 +176,12 @@ export default class Engine {
 		if(player.left) {
 			//players[i].currentType = Bomberman.ImageManager.LeftMovement;
 			//animator.animate(players[i], dt);
-
+            player.animate(dt);
 			this.move(player, Direction.LEFT, speed);
 		} else if(player.right) {
 			//players[i].currentType = Bomberman.ImageManager.RightMovement;
 			//animator.animate(players[i], dt);
-
+            player.animate(dt);
 			this.move(player, Direction.RIGHT, speed);
 		}
     }
