@@ -1,5 +1,6 @@
 
 import Map from 'app/components/map';
+import Bomb from 'app/components/bomb';
 import Coord from 'app/data/coordinates';
 import Bomberman from 'app/components/bomberman';
 import Direction from 'app/data/direction';
@@ -44,21 +45,29 @@ export default class Engine {
         this.registerOpponentEvents();
         //add self
         this.addPlayer(this.db.getMyId(), this.getEmptyPoint(), true);
+        //update player location
+        this.db.savePlayerInfo(this.player);
+        //clear past bombs information
+        this.db.updatePlayerBombs([]);
     }
 
     plantBombByPlayer() {
-        let coord = this.player.getCoord();
-        let mapTile = this.mapToTileCoord(coord);
+        //let coord = this.player.getCoord();
+        //let mapTile = this.mapToTileCoord(coord);
 
-        this.plantBomb(this.player, mapTile);
+        this.plantBomb(this.player);
     }
 
-    plantBomb(player, mapTile) {
-        if (this.map.plantable(mapTile) && player.plantBomb()) {
-            let bomb = player.getBomb();
-            bomb.setCoord(this.tileToMapCoord(this.mapToTileCoord(bomb.getCoord())));
+    plantBomb(player) {
+        let bomb = player.getBomb();
+        let bombCoord = bomb.getCoord();
+        let bombTileCoord = this.mapToTileCoord(bombCoord);
+        if (this.map.plantable(bombTileCoord) && player.plantBomb()) {
+            bomb.setCoord(this.tileToMapCoord(bombTileCoord));
             this.bombs.push(bomb);
-            this.map.addObject(mapTile, bomb);
+            this.map.addObject(bombTileCoord, bomb);
+            //save to db
+            this.db.updatePlayerBombs(player.getBombs());
         }
     }
 
@@ -68,29 +77,38 @@ export default class Engine {
     }
 
     registerOpponentEvents() {
-        this.db.getExistingPlayers((data) => {
-            let key = data.key;
-            if (!this.playerExist(key)) {
-                let rawCoord = data.coord;
-                let coord = new Coord(rawCoord.x, rawCoord.y);
-                this.addPlayer(key, coord);
-            }
-        });
-
         this.db.onNewPlayer((data) => {
             let id = data.key;
             if (!this.playerExist(id)) {
-                let rawCoord = data.val().coord;
+                let player = data.val()
+                let rawCoord = player.coord;
                 let coord = new Coord(rawCoord.x, rawCoord.y);
                 this.addPlayer(id, coord);
+
+                let bombs = player.bombs;
+                if (bombs) {
+                    Object.keys(bombs).forEach(key => {
+                        let coord = bombs[key];
+                        this.bombs.push(new Bomb(new Coord(coord.x, coord.y)));
+                    });
+                }
             }
         });
 
-        this.db.onPlayerMove((data) => {
+        this.db.onPlayerUpdate((data) => {
             let id = data.key;
-            let rawCoord = data.val().coord;
+            let player = data.val();
+            let rawCoord = player.coord;
             let coord = new Coord(rawCoord.x, rawCoord.y);
             this.updatePlayerPosition(id, coord);
+
+            let bombs = player.bombs;
+            if (bombs) {
+                Object.keys(bombs).forEach(key => {
+                    let coord = bombs[key];
+                    this.bombs.push(new Bomb(new Coord(coord.x, coord.y)));
+                });
+            }
         });
 
         this.db.onPlayerExit((data) => {
@@ -167,7 +185,7 @@ export default class Engine {
         //save new player coord to firebase
         let player = this.player;
         if (player.hasUpdatedPosition()) {
-            this.db.savePlayerCoord(player.getCoord());
+            this.db.savePlayerInfo(player);
         }
     }
 

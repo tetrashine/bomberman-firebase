@@ -40,8 +40,15 @@ export default class Map {
     getMapVal(coord) { return this.map[coord.getY()][coord.getX()]; }
 
     addObject(coord, obj) { this.mapObjs[coord.getY()][coord.getX()].push(obj); }
+    walkableObjectsOnTile(coord) {
+        return this.mapObjs[coord.getY()][coord.getX()].every((object) => {
+            return object.walkable();
+        });
+    }
 
-    walkable(coord) { return (this.getMapVal(coord) === 0); }
+    walkable(coord) {
+        return (this.getMapVal(coord) === 0) && this.walkableObjectsOnTile(coord);
+    }
     plantable(coord) { return (this.getMapVal(coord) === 0); }
     canExplodeThru(coord) { return (this.getMapVal(coord) === 0); }
 }

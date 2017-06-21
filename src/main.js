@@ -18,7 +18,7 @@ firebase.auth().onAuthStateChanged(function(user) {
     }
 });
 
-$("#loginBtn").click(() => {
+let loginFunc = () => {
     let email = $("#loginEmail").val();
     let pwd = $("#loginPwd").val();
 
@@ -36,7 +36,16 @@ $("#loginBtn").click(() => {
             $("#loginError").show().text(error.message);
         });
     }
+};
+
+$('#loginBtn, .input_field').keypress(function (e) {
+    if (e.which == 13) {
+        loginFunc();
+        e.preventDefault();
+    }
 });
+
+$("#loginBtn").click(loginFunc);
 
 $("#signOutBtn").click(() => {
     firebase.auth().signOut().then(() => {

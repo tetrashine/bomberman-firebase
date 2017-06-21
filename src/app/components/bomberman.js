@@ -15,6 +15,7 @@ export default class Bomberman extends MapObject {
         this.image = image;
 
         // Bomb related
+        this.bombsArr = [];
         this.bombStr = 8;
         this.bombs = 8;
         this.bombsMax = this.bombs;
@@ -54,8 +55,16 @@ export default class Bomberman extends MapObject {
     }
 
     getBomb() {
-        return new Bomb(this.getCoord().copy(), this.bombStr, this.denotateTime, this.explodeDuration);
+        let coord = this.getCoord().copy();
+        let semi = this.getWidth() / 2;
+        coord.addX(semi);
+        coord.addY(semi);
+        let bomb = new Bomb(coord, this.getId(), this.bombStr, this.denotateTime, this.explodeDuration);
+        this.bombsArr.push(bomb.getCoord());
+        return bomb;
     }
+
+    getBombs() { return this.bombsArr; }
 
     isCurrPlayer() { return this.isSelf; }
     getId() { return this.playerId; }

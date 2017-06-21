@@ -33,7 +33,7 @@ export default class Firebase extends Db {
         });
     }
 
-    onPlayerMove(func) {
+    onPlayerUpdate(func) {
         this.database.ref(PLAYERS_PATH).on("child_changed", (data, prevChildKey) => {
             if (data.key != this.getMyId()) {
                 func(data);
@@ -45,11 +45,13 @@ export default class Firebase extends Db {
         this.database.ref(PLAYERS_PATH).on("child_removed", func);
     }
 
-    savePlayerCoord(coord) {
-        this.database.ref(PLAYERS_PATH + this.getMyId()).set({
-            coord: coord
-        });
+    savePlayerInfo(player) {
+        this.database.ref(PLAYERS_PATH + this.getMyId() + '/coord').set(player.getCoord());
     }
 
-    saveBombCoord(coord) {}
+    updatePlayerBombs(bombs) {
+        let update = {};
+        update[PLAYERS_PATH + this.getMyId() + '/bombs'] = bombs;
+        this.database.ref().update(update);
+    }
 }
