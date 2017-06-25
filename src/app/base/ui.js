@@ -60,6 +60,10 @@ export default class UI {
         let canvas = this.canvas;
         mapObjs.forEach((mapObj, i) => {
             canvas.drawImage(mapObj.getImage(), mapObj.getSourceX(), 0, mapObj.getWidth(), mapObj.getHeight(), mapObj.getX(), mapObj.getY(), mapObj.getWidth(), mapObj.getHeight());
+            if (mapObj.getName) {
+                canvas.font = '14px sans-serif';
+                canvas.fillText(mapObj.getName(), mapObj.getWidth() / 2, mapObj.getHeight() / 2);
+            }
         });
     }
 

@@ -4,6 +4,7 @@ import Bomb from 'app/components/bomb';
 import Coord from 'app/data/coordinates';
 import Bomberman from 'app/components/bomberman';
 import Direction from 'app/data/direction';
+import Explosion from 'app/components/explosion';
 
 export default class Engine {
     constructor(ui, db) {
@@ -14,6 +15,7 @@ export default class Engine {
         this.players = [];
         this.playersById = {};
         this.bombs = [];
+        this.explosions = [];
         this.gameStarted = false;
         this.accumulatedTiming = 0;
         this.stepInterval = 0.016666666666667;
@@ -187,6 +189,69 @@ export default class Engine {
         if (player.hasUpdatedPosition()) {
             this.db.savePlayerInfo(player);
         }
+
+        //check bombs for explosion
+        this.increaseBombsTimer(dt);
+
+        //check explosion for removal
+        this.increaseExplosionTimer(dt);
+    }
+
+    increaseExplosionTimer(dt) {
+        for (let i = this.explosions.length-1; i >= 0; i--) {
+            let explosion = this.explosions[i];
+
+            if (explosion.getPlayerId() === this.player.getId() &&
+                explosion.reduceTimer(dt)) {
+                // remove explosion
+                this.explosions.splice(i , 1);
+            }
+        }
+    }
+
+    increaseBombsTimer(dt) {
+        let playerId = this.player.getId();
+        for (let i = this.bombs.length-1; i >= 0; i--) {
+            let bomb = this.bombs[i];
+
+            if (bomb.getPlayerId() === playerId &&
+                bomb.reduceTimer(dt)) {
+                //create explosion
+                this.createExplosion(playerId, bomb);
+
+                // remove bomb
+                this.player.detonateBomb();
+                this.bombs.splice(i , 1);
+            }
+        }
+    }
+
+    createExplosion(playerId, bomb) {
+        let i = 1;
+        let str = bomb.getStr();
+        let coord = bomb.getCoord();
+        let duration = bomb.getDuration();
+
+        this.addExplosion(playerId, coord, str, duration);
+
+        let tileCoord = this.mapToTileCoord(coord);
+        while (i++ < str) {
+            let up = tileCoord.copy().addY(-1);
+            let down = tileCoord.copy().addY(1);
+            let left = tileCoord.copy().addX(-1);
+            let right = tileCoord.copy().addX(1);
+
+            [up, down, left, right].forEach(dir => {
+                if (this.map.canExplodeThru(dir)) {
+                    this.addExplosion(playerId, this.tileToMapCoord(dir), str, duration);
+                }
+            });
+        }
+    }
+
+    addExplosion(playerId, coord, str, duration) {
+        let explosion = new Explosion(playerId, coord, str, duration);
+        this.explosions.push(explosion);
     }
 
     animateInterval(dt) {
@@ -209,9 +274,8 @@ export default class Engine {
         //draw fps
         let framePerSec = Math.floor(1/dt);
         this.ui.writeFpsMessage("FPS:" + framePerSec);
-        //draw bombs
-        this.ui.drawMapObjects(this.bombs);
-        //draw explosion
+        //draw bombs & explosion
+        this.ui.drawMapObjects(this.bombs.concat(this.explosions));
         //draw players
         this.ui.drawMapObjects(this.players);
     }

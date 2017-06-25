@@ -54,6 +54,12 @@ export default class Bomberman extends MapObject {
         return planted;
     }
 
+    detonateBomb() {
+        if (this.bombs < this.bombsMax) {
+            this.bombs++;
+        }
+    }
+
     getBomb() {
         let coord = this.getCoord().copy();
         let semi = this.getWidth() / 2;
@@ -65,10 +71,8 @@ export default class Bomberman extends MapObject {
     }
 
     getBombs() { return this.bombsArr; }
-
     isCurrPlayer() { return this.isSelf; }
     getId() { return this.playerId; }
-
     getSpeed() { return this.speed; }
 
     getType() {
