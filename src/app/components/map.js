@@ -41,14 +41,28 @@ export default class Map {
 
     addObject(coord, obj) { this.mapObjs[coord.getY()][coord.getX()].push(obj); }
     walkableObjectsOnTile(coord) {
+        if (this.beyondMap(coord)) { return false; }
         return this.mapObjs[coord.getY()][coord.getX()].every((object) => {
             return object.walkable();
         });
     }
 
     walkable(coord) {
+        if (this.beyondMap(coord)) { return false; }
         return (this.getMapVal(coord) === 0) && this.walkableObjectsOnTile(coord);
     }
-    plantable(coord) { return (this.getMapVal(coord) === 0); }
-    canExplodeThru(coord) { return (this.getMapVal(coord) === 0); }
+    plantable(coord) {
+        if (this.beyondMap(coord)) { return false; }
+        return (this.getMapVal(coord) === 0);
+    }
+    canExplodeThru(coord) {
+        if (this.beyondMap(coord)) { return false; }
+        return (this.getMapVal(coord) === 0);
+    }
+
+    beyondMap(coord) {
+        let x = coord.getX();
+        let y = coord.getY();
+        return (x < 0 || x > this.getWidth() || y < 0 || y > this.getHeight());
+    }
 }

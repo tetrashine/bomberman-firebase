@@ -16,7 +16,7 @@ export default class Bomberman extends MapObject {
 
         // Bomb related
         this.bombsArr = [];
-        this.bombStr = 8;
+        this.bombStr = 3;
         this.bombs = 8;
         this.bombsMax = this.bombs;
         this.denotateTime = 3;

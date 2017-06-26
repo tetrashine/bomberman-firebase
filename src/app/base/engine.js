@@ -235,27 +235,30 @@ export default class Engine {
         this.addExplosion(playerId, coord, str, duration);
 
         let tileCoord = this.mapToTileCoord(coord);
-        while (i++ < str) {
-            let up = tileCoord.copy().addY(-1);
-            let down = tileCoord.copy().addY(1);
-            let left = tileCoord.copy().addX(-1);
-            let right = tileCoord.copy().addX(1);
+        while (i <= str) {
+            let isEnd = (i === str)
+            let up = tileCoord.copy().addY(-i);
+            let down = tileCoord.copy().addY(i);
+            let left = tileCoord.copy().addX(-i);
+            let right = tileCoord.copy().addX(i);
 
-            [up, down, left, right].forEach(dir => {
+            [up, right, down, left].forEach((dir, index) => {
                 if (this.map.canExplodeThru(dir)) {
-                    this.addExplosion(playerId, this.tileToMapCoord(dir), str, duration);
+                    this.addExplosion(playerId, this.tileToMapCoord(dir), str, duration, index, isEnd);
                 }
             });
+
+            i++;
         }
     }
 
-    addExplosion(playerId, coord, str, duration) {
-        let explosion = new Explosion(playerId, coord, str, duration);
+    addExplosion(playerId, coord, str, duration, directionIndex, isEnd) {
+        let explosion = new Explosion(playerId, coord, str, duration, directionIndex, isEnd);
         this.explosions.push(explosion);
     }
 
     animateInterval(dt) {
-        [this.bombs, this.players].forEach(list => {
+        [this.bombs, this.explosions, this.players].forEach(list => {
             list.forEach(obj => {
                 obj.animate(dt);
             });
