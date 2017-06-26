@@ -223,6 +223,7 @@ export default class Engine {
                 let mapObjs = this.map.removeObjects(this.mapToTileCoord(bomb.getCoord()));
                 this.player.detonateBomb();
                 this.bombs.splice(i , 1);
+                
             }
         }
     }
