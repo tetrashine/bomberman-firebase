@@ -220,6 +220,7 @@ export default class Engine {
                 this.createExplosion(playerId, bomb);
 
                 // remove bomb
+                let mapObjs = this.map.removeObjects(this.mapToTileCoord(bomb.getCoord()));
                 this.player.detonateBomb();
                 this.bombs.splice(i , 1);
             }

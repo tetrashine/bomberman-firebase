@@ -40,6 +40,11 @@ export default class Map {
     getMapVal(coord) { return this.map[coord.getY()][coord.getX()]; }
 
     addObject(coord, obj) { this.mapObjs[coord.getY()][coord.getX()].push(obj); }
+    removeObjects(coord) {
+        let objs = this.mapObjs[coord.getY()][coord.getX()];
+        this.mapObjs[coord.getY()][coord.getX()] = [];
+        return objs;
+    }
     walkableObjectsOnTile(coord) {
         if (this.beyondMap(coord)) { return false; }
         return this.mapObjs[coord.getY()][coord.getX()].every((object) => {
