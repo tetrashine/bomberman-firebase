@@ -205,8 +205,32 @@ export default class Engine {
                 explosion.reduceTimer(dt)) {
                 // remove explosion
                 this.explosions.splice(i , 1);
+            } else {
+                // explode location
+                this.explodeLocation(explosion.getCoord());
             }
         }
+    }
+
+    explodeLocation(coord) {
+        let playerId = this.player.getId();
+        let explodables = this.map.removeExplodables(this.mapToTileCoord(coord));
+        explodables.forEach(explodable => {
+            if (explodable instanceof Bomb
+                && explodable.getPlayerId() === playerId) {
+
+                //create explosion
+                this.createExplosion(playerId, explodable);
+
+                //remove bomb
+                this.player.detonateBomb();
+                for (let i = this.bombs.length-1; i >= 0; i--) {
+                    if (this.bombs[i] === explodable) {
+                        this.bombs.splice(i , 1);
+                    }
+                }
+            }
+        });
     }
 
     increaseBombsTimer(dt) {
@@ -219,11 +243,10 @@ export default class Engine {
                 //create explosion
                 this.createExplosion(playerId, bomb);
 
-                // remove bomb
+                //remove bomb
                 let mapObjs = this.map.removeObjects(this.mapToTileCoord(bomb.getCoord()));
                 this.player.detonateBomb();
                 this.bombs.splice(i , 1);
-                
             }
         }
     }

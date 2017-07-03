@@ -45,6 +45,25 @@ export default class Map {
         this.mapObjs[coord.getY()][coord.getX()] = [];
         return objs;
     }
+    removeExplodables(coord) {
+        let x = coord.getX();
+        let y = coord.getY();
+        let explodables = [];
+        let objs = this.mapObjs[y][x];
+        let i = objs.length - 1;
+
+        if (this.beyondMap(coord)) { return false; }
+
+        for (; i >= 0; i--) {
+            if (objs[i].explodable()) {
+                explodables.push(objs[i]);
+
+                objs.splice(i, 1);
+            }
+        }
+
+        return explodables;
+    }
     walkableObjectsOnTile(coord) {
         if (this.beyondMap(coord)) { return false; }
         return this.mapObjs[coord.getY()][coord.getX()].every((object) => {

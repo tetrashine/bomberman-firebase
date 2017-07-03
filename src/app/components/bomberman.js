@@ -24,6 +24,8 @@ export default class Bomberman extends MapObject {
 
         // Animation
         this.totalFrames = 16;
+
+        this.setExplodable();
     }
 
     reset() {
