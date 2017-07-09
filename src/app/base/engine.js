@@ -151,6 +151,8 @@ export default class Engine {
         if (isSelf) {
             this.player = bomberman;
         }
+
+        this.map.addObject(this.mapToTileCoord(coord), bomberman);
     }
 
     updatePlayerPosition(uid, coord) {
@@ -246,6 +248,8 @@ export default class Engine {
                 explodable.respawn();
                 explodable.setCoord(coord);
                 this.map.addObject(this.mapToTileCoord(coord), explodable);
+
+                this.db.savePlayerInfo(explodable);
             }
         });
     }
