@@ -45,6 +45,20 @@ export default class Map {
         this.mapObjs[coord.getY()][coord.getX()] = [];
         return objs;
     }
+    removeObject(coord, obj) {
+        let y = coord.getY();
+        let x = coord.getX();
+        if (this.beyondMap(coord)) { return false; }
+
+        let index = this.mapObjs[y][x];
+
+        if (index < 0) { return false; }
+
+        this.mapObjs[y][x].splice(index, 1);
+
+        return true;
+    }
+
     removeExplodables(coord) {
         let x = coord.getX();
         let y = coord.getY();

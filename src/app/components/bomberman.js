@@ -48,31 +48,46 @@ export default class Bomberman extends MapObject {
     }
 
     plantBomb() {
-        let planted = false;
+        let bombId = 0;
         if (this.bombs > 0) {
-            this.bombs --;
-            planted = true;
+            bombId = this.bombs --;
         }
-        return planted;
+        return bombId;
     }
 
-    detonateBomb() {
+    detonateBomb(bombId) {
         if (this.bombs < this.bombsMax) {
             this.bombs++;
         }
+
+        this.bombsArr = this.bombsArr.filter(bomb => {
+            return bomb.id !== bombId;
+        });
     }
 
-    getBomb() {
-        let coord = this.getCoord().copy();
-        let semi = this.getWidth() / 2;
-        coord.addX(semi);
-        coord.addY(semi);
-        let bomb = new Bomb(coord, this.getId(), this.bombStr, this.denotateTime, this.explodeDuration);
-        this.bombsArr.push(bomb.getCoord());
+    addBomb(bombId, coord) {
+        let bomb = new Bomb(coord, this.getId(), this.bombStr, this.denotateTime, this.explodeDuration, bombId);
+        this.bombsArr.push(bomb.toServerData());
         return bomb;
     }
 
-    getBombs() { return this.bombsArr; }
+    getBombCoord() {
+        let coord = this.getCoord().copy();
+        let semi = this.getWidth() / 2;
+        coord.addX(semi).addY(semi);
+
+        return coord;
+    }
+
+    getBombs() {
+        let obj = {};
+        this.bombsArr.forEach(bomb => {
+            obj[bomb.id] = bomb;
+        });
+
+        return obj;
+    }
+
     isCurrPlayer() { return this.isSelf; }
     getId() { return this.playerId; }
     getSpeed() { return this.speed; }

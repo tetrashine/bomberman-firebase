@@ -61,11 +61,11 @@ export default class Engine {
     }
 
     plantBomb(player) {
-        let bomb = player.getBomb();
-        let bombCoord = bomb.getCoord();
+        let bombId = player.plantBomb();
+        let bombCoord = player.getBombCoord();
         let bombTileCoord = this.mapToTileCoord(bombCoord);
-        if (this.map.plantable(bombTileCoord) && player.plantBomb()) {
-            bomb.setCoord(this.tileToMapCoord(bombTileCoord));
+        if (this.map.plantable(bombTileCoord) && bombId > 0) {
+            let bomb = player.addBomb(bombId, this.tileToMapCoord(bombTileCoord));
             this.bombs.push(bomb);
             this.map.addObject(bombTileCoord, bomb);
             //save to db
@@ -86,29 +86,30 @@ export default class Engine {
                 let rawCoord = player.coord;
                 let coord = new Coord(rawCoord.x, rawCoord.y);
                 this.addPlayer(id, coord);
-
-                let bombs = player.bombs;
-                if (bombs) {
-                    Object.keys(bombs).forEach(key => {
-                        let coord = bombs[key];
-                        this.bombs.push(new Bomb(new Coord(coord.x, coord.y)));
-                    });
-                }
             }
         });
 
         this.db.onPlayerUpdate((data) => {
-            let id = data.key;
+            let playerId = data.key;
             let player = data.val();
             let rawCoord = player.coord;
             let coord = new Coord(rawCoord.x, rawCoord.y);
-            this.updatePlayerPosition(id, coord);
+            this.updatePlayerPosition(playerId, coord);
 
             let bombs = player.bombs;
             if (bombs) {
                 Object.keys(bombs).forEach(key => {
-                    let coord = bombs[key];
-                    this.bombs.push(new Bomb(new Coord(coord.x, coord.y)));
+                    let bomb = bombs[key];
+                    if (!this.bombExist(playerId, bomb.id)) {
+                        this.bombs.push(new Bomb(
+                            new Coord(bomb.x, bomb.y),
+                            playerId,
+                            bomb.str,
+                            bomb.detonateTime,
+                            bomb.duration,
+                            bomb.id
+                        ));
+                    }
                 });
             }
         });
@@ -117,6 +118,12 @@ export default class Engine {
             let id = data.key;
             this.deletePlayerById(id);
         });
+    }
+
+    bombExist(playerId, bombId) {
+        return this.bombs.some((ele, index) => {
+            return ele.getPlayerId() === playerId && ele.getId() === bombId;
+        })
     }
 
     deletePlayer(uid) {
@@ -201,8 +208,7 @@ export default class Engine {
         for (let i = this.explosions.length-1; i >= 0; i--) {
             let explosion = this.explosions[i];
 
-            if (explosion.getPlayerId() === this.player.getId() &&
-                explosion.reduceTimer(dt)) {
+            if (explosion.reduceTimer(dt)) {
                 // remove explosion
                 this.explosions.splice(i , 1);
             } else {
@@ -213,53 +219,69 @@ export default class Engine {
     }
 
     explodeLocation(coord) {
-        let playerId = this.player.getId();
+        let player = this.player;
+        let playerId = player.getId();
         let explodables = this.map.removeExplodables(this.mapToTileCoord(coord));
-        explodables.forEach(explodable => {
-            if (explodable instanceof Bomb
-                && explodable.getPlayerId() === playerId) {
+        explodables
+        .filter(explodable => { return explodable.getPlayerId() === playerId; })
+        .forEach(explodable => {
+            if (explodable instanceof Bomb) {
 
                 //create explosion
-                this.createExplosion(playerId, explodable);
+                this.createExplosion(explodable);
 
                 //remove bomb
-                this.player.detonateBomb();
+                player.detonateBomb(explodable.getId());
                 for (let i = this.bombs.length-1; i >= 0; i--) {
                     if (this.bombs[i] === explodable) {
                         this.bombs.splice(i , 1);
                     }
                 }
+
+                //update bomb info
+                this.db.updatePlayerBombs(player.getBombs());
+
+            } else if (explodable instanceof Bomberman){
+                let coord = this.getEmptyPoint();
+                explodable.respawn();
+                explodable.setCoord(coord);
+                this.map.addObject(this.mapToTileCoord(coord), explodable);
             }
         });
     }
 
     increaseBombsTimer(dt) {
-        let playerId = this.player.getId();
+        //let playerId = this.player.getId();
         for (let i = this.bombs.length-1; i >= 0; i--) {
             let bomb = this.bombs[i];
 
-            if (bomb.getPlayerId() === playerId &&
-                bomb.reduceTimer(dt)) {
+            if (bomb.reduceTimer(dt)) {
                 //create explosion
-                this.createExplosion(playerId, bomb);
+                this.createExplosion(bomb);
 
                 //remove bomb
+                let player = this.player;
                 let mapObjs = this.map.removeObjects(this.mapToTileCoord(bomb.getCoord()));
-                this.player.detonateBomb();
+                player.detonateBomb(bomb.getId());
                 this.bombs.splice(i , 1);
+
+                //update bomb info
+                this.db.updatePlayerBombs(player.getBombs());
             }
         }
     }
 
-    createExplosion(playerId, bomb) {
+    createExplosion(bomb) {
         let i = 1;
         let str = bomb.getStr();
         let coord = bomb.getCoord();
         let duration = bomb.getDuration();
+        let playerId = bomb.getPlayerId();
 
         this.addExplosion(playerId, coord, str, duration);
 
         let tileCoord = this.mapToTileCoord(coord);
+        let thru = [true, true, true, true];    //check if can explode through
         while (i <= str) {
             let isEnd = (i === str)
             let up = tileCoord.copy().addY(-i);
@@ -268,8 +290,10 @@ export default class Engine {
             let right = tileCoord.copy().addX(i);
 
             [up, right, down, left].forEach((dir, index) => {
-                if (this.map.canExplodeThru(dir)) {
+                if (thru[index] && this.map.canExplodeThru(dir)) {
                     this.addExplosion(playerId, this.tileToMapCoord(dir), str, duration, index, isEnd);
+                } else {
+                    thru[index] = false;
                 }
             });
 
@@ -444,6 +468,24 @@ export default class Engine {
 
             player.setCoord(topLeft);
         }
+
+        // This is to check that the player has moved enough
+		// to change a slot to another slot in the map.
+        let oldCoord = oriTopLeft.copy();
+        let newCoord = topLeft.copy();
+        oldCoord.addX(player.getWidth() / 2).addY(player.getHeight() / 2);
+        newCoord.addX(player.getWidth() / 2).addY(player.getHeight() / 2);
+
+        let oldTileCoord = this.mapToTileCoord(oldCoord);
+        let newTileCoord = this.mapToTileCoord(newCoord);
+
+        if (!oldTileCoord.same(newTileCoord)) {
+			// Remove from prev location
+			if (this.map.removeObject(oldTileCoord, player)) {
+				// Add to new location
+				this.map.addObject(newTileCoord, player);
+			}
+		}
     }
 
     mapToTileCoord(coord) {
