@@ -50,7 +50,7 @@ export default class Map {
         let x = coord.getX();
         if (this.beyondMap(coord)) { return false; }
 
-        let index = this.mapObjs[y][x];
+        let index = this.mapObjs[y][x].indexOf(obj);
 
         if (index < 0) { return false; }
 

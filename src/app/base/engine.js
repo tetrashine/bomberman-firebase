@@ -241,7 +241,7 @@ export default class Engine {
                 //update bomb info
                 this.db.updatePlayerBombs(player.getBombs());
 
-            } else if (explodable instanceof Bomberman){
+            } else if (explodable instanceof Bomberman) {
                 let coord = this.getEmptyPoint();
                 explodable.respawn();
                 explodable.setCoord(coord);
