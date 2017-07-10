@@ -213,6 +213,7 @@ export default class Engine {
             if (explosion.reduceTimer(dt)) {
                 // remove explosion
                 this.explosions.splice(i , 1);
+                this.map.removeObject(this.mapToTileCoord(explosion.getCoord()), explosion);
             } else {
                 // explode location
                 this.explodeLocation(explosion.getCoord());
@@ -265,7 +266,7 @@ export default class Engine {
 
                 //remove bomb
                 let player = this.player;
-                let mapObjs = this.map.removeObjects(this.mapToTileCoord(bomb.getCoord()));
+                let mapObjs = this.map.removeObject(this.mapToTileCoord(bomb.getCoord()), bomb);
                 player.detonateBomb(bomb.getId());
                 this.bombs.splice(i , 1);
 
@@ -306,8 +307,17 @@ export default class Engine {
     }
 
     addExplosion(playerId, coord, str, duration, directionIndex, isEnd) {
-        let explosion = new Explosion(playerId, coord, str, duration, directionIndex, isEnd);
-        this.explosions.push(explosion);
+        let tileCoord = this.mapToTileCoord(coord);
+        if (this.map.hasExplosion(tileCoord)) {
+            let explosion = this.map.getMapObjs(tileCoord).find(obj => {
+                return obj instanceof Explosion;
+            });
+            explosion.update(directionIndex, isEnd);
+        } else {
+            let explosion = new Explosion(playerId, coord, str, duration, directionIndex, isEnd);
+            this.explosions.push(explosion);
+            this.map.addObject(tileCoord, explosion);
+        }
     }
 
     animateInterval(dt) {

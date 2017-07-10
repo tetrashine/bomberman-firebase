@@ -1,4 +1,6 @@
 
+import Explosion from 'app/components/explosion';
+
 export default class Map {
     constructor() {
         let map = this.map = [
@@ -38,7 +40,7 @@ export default class Map {
     getHeight() { return this.mapHeight; }
     getMap() { return this.map; }
     getMapVal(coord) { return this.map[coord.getY()][coord.getX()]; }
-
+    getMapObjs(coord) { return this.mapObjs[coord.getY()][coord.getX()]; }
     addObject(coord, obj) { this.mapObjs[coord.getY()][coord.getX()].push(obj); }
     removeObjects(coord) {
         let objs = this.mapObjs[coord.getY()][coord.getX()];
@@ -96,6 +98,12 @@ export default class Map {
     canExplodeThru(coord) {
         if (this.beyondMap(coord)) { return false; }
         return (this.getMapVal(coord) === 0);
+    }
+
+    hasExplosion(coord) {
+        return this.mapObjs[coord.getY()][coord.getX()].some(t => {
+            return t instanceof Explosion;
+        });
     }
 
     beyondMap(coord) {
