@@ -108,6 +108,24 @@ export default class Bomberman extends MapObject {
         return type;
     }
 
+    setType(type) {
+        this.up = this.down = this.left = this.right = false;
+        switch(type) {
+            case 0:
+                this.down = true;
+                break;
+            case 1:
+                this.up = true;
+                break;
+            case 2:
+                this.left = true;
+                break;
+            case 3:
+                this.right = true;
+                break;
+        }
+    }
+
     animate(dt) {
         if (this.up || this.down || this.left || this.right) {
             super.animate(dt);

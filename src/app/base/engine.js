@@ -93,8 +93,9 @@ export default class Engine {
             let playerId = data.key;
             let player = data.val();
             let rawCoord = player.coord;
+            let type = player.type;
             let coord = new Coord(rawCoord.x, rawCoord.y);
-            this.updatePlayerPosition(playerId, coord);
+            this.updatePlayerPosition(playerId, coord, type);
 
             let bombs = player.bombs;
             if (bombs) {
@@ -155,8 +156,9 @@ export default class Engine {
         this.map.addObject(this.mapToTileCoord(coord), bomberman);
     }
 
-    updatePlayerPosition(uid, coord) {
+    updatePlayerPosition(uid, coord, type) {
         this.playersById[uid].setCoord(coord);
+        this.playersById[uid].setType(type);
     }
 
     getEmptyPoint() {
