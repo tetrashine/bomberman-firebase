@@ -4,7 +4,7 @@ import * as rap from 'raphael';
 export default class UI {
     constructor(id) {
         this.fullWidth = 1248;
-        this.fullHeight = 608;
+        this.fullHeight = 544;
         this.cellPixel = 32;
 
         let container = document.getElementById(id);
@@ -74,5 +74,17 @@ export default class UI {
     writeFpsMessage(message) {
         this.canvas.font        = '14px sans-serif';
         this.canvas.fillText(message, 10, 20);
+    }
+
+    drawScoreboard(players) {
+        let playerDivs = players.map(player => {
+            return `<tr>
+                <td>${player.getName()}</td>
+                <td>${player.getKills()}</td>
+                <td>${player.getDeaths()}</td>
+            </tr>`;
+        });
+
+        $('#scoreboard').html(playerDivs);
     }
 }

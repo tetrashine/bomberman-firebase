@@ -131,4 +131,8 @@ export default class Bomberman extends MapObject {
             super.animate(dt);
         }
     }
+
+    getKills() { return this.kills; }
+    getDeaths() { return this.deaths; }
+    getName() { return this.name; }
 }

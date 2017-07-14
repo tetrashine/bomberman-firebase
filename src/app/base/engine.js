@@ -333,7 +333,7 @@ export default class Engine {
     drawInterval(dt) {
         this.drawGame(dt);
 
-        this.drawScore();
+        this.drawScoreboard();
     }
 
     drawGame(dt) {
@@ -348,7 +348,25 @@ export default class Engine {
         this.ui.drawMapObjects(this.players);
     }
 
-    drawScore() {}
+    drawScoreboard() {
+        //draw with sorted
+        this.ui.drawScoreboard(this.players.sort((p1, p2) => {
+            let k1 = p1.getKills();
+            let k2 = p2.getKills();
+            let d1 = p1.getDeaths();
+            let d2 = p2.getDeaths();
+            let n1 = p1.getName();
+            let n2 = p1.getName();
+
+            if (k1 < k2) return -1;
+            if (k1 > k2) return 1;
+            if (d1 < d2) return -1;
+            if (d1 > d2) return 1;
+            if (n1 < n2) return -1;
+            if (n1 > n2) return 1;
+            return 0;
+        }));
+    }
 
     movePlayer(dt) {
         let player = this.player;
