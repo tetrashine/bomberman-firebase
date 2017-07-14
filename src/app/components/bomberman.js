@@ -43,7 +43,7 @@ export default class Bomberman extends MapObject {
     }
 
     respawn() {
-        this.death++;
+        this.deaths++;
         this.bombs = this.bombsMax;
     }
 
