@@ -46,7 +46,7 @@ export default class Engine {
         //register to add opponents
         this.registerOpponentEvents();
         //add self
-        this.addPlayer(this.db.getMyId(), this.getEmptyPoint(), true);
+        this.addPlayer(this.db.getMyId(), this.getEmptyPoint(), 0, 0, true);
         //update player location
         this.db.savePlayerInfo(this.player);
         //clear past bombs information
@@ -83,9 +83,11 @@ export default class Engine {
             let id = data.key;
             if (!this.playerExist(id)) {
                 let player = data.val()
+                let kills = player.kills;
+                let deaths = player.deaths;
                 let rawCoord = player.coord;
                 let coord = new Coord(rawCoord.x, rawCoord.y);
-                this.addPlayer(id, coord);
+                this.addPlayer(id, coord, kills, deaths);
             }
         });
 
@@ -94,8 +96,10 @@ export default class Engine {
             let player = data.val();
             let rawCoord = player.coord;
             let type = player.type;
+            let kills = player.kills;
+            let deaths = player.deaths;
             let coord = new Coord(rawCoord.x, rawCoord.y);
-            this.updatePlayerPosition(playerId, coord, type);
+            this.updatePlayer(playerId, coord, type, kills, deaths);
 
             let bombs = player.bombs;
             if (bombs) {
@@ -142,8 +146,10 @@ export default class Engine {
 		}
     }
 
-    addPlayer(uid, coord, isSelf=false) {
+    addPlayer(uid, coord, kills=0, deaths=0, isSelf=false) {
         let bomberman = new Bomberman(uid, coord, isSelf);
+        bomberman.setKills(kills);
+        bomberman.setDeaths(deaths);
 
         this.players.push(bomberman);
         this.playersById[uid] = bomberman;
@@ -156,9 +162,12 @@ export default class Engine {
         this.map.addObject(this.mapToTileCoord(coord), bomberman);
     }
 
-    updatePlayerPosition(uid, coord, type) {
-        this.playersById[uid].setCoord(coord);
-        this.playersById[uid].setType(type);
+    updatePlayer(uid, coord, type, kills, deaths) {
+        let player = this.playersById[uid];
+        player.setCoord(coord);
+        player.setType(type);
+        player.setKills(kills);
+        player.setDeaths(deaths);
     }
 
     getEmptyPoint() {

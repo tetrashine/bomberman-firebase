@@ -135,4 +135,7 @@ export default class Bomberman extends MapObject {
     getKills() { return this.kills; }
     getDeaths() { return this.deaths; }
     getName() { return this.name; }
+
+    setKills(kills) { this.kills = kills; }
+    setDeaths(deaths) { this.deaths = deaths; }
 }
