@@ -36,21 +36,33 @@ export default class Engine {
         this.gameStarted = true;
 
         this.initGame();
-
-        requestAnimationFrame(this.engineInterval);
     }
 
     initGame() {
-        //draw basemap
-        this.ui.drawMap(this.map);
-        //register to add opponents
-        this.registerOpponentEvents();
-        //add self
-        this.addPlayer(this.db.getMyId(), this.getEmptyPoint(), 0, 0, true);
-        //update player location
-        this.db.savePlayerInfo(this.player);
-        //clear past bombs information
-        this.db.updatePlayerBombs([]);
+        //read for user info before starting the game
+        let userId = this.db.getMyId();
+        this.db.getPlayerInfo(userId, (data) => {
+            //ui show username
+            this.ui.updateUserName(data.name);
+            //draw basemap
+            this.ui.drawMap(this.map);
+            //register to add opponents
+            this.registerOpponentEvents();
+            //add self
+            this.addPlayer(userId, data.name, this.getEmptyPoint(), 0, 0, true);
+            //update player location
+            this.db.savePlayerInfo(this.player);
+            //clear past bombs information
+            this.db.updatePlayerBombs([]);
+
+            //register for name changes
+            this.ui.registerNameChange((name) => {
+                this.player.setName(name);
+            });
+
+            //start game
+            requestAnimationFrame(this.engineInterval);
+        });
     }
 
     plantBombByPlayer() {
@@ -85,9 +97,10 @@ export default class Engine {
                 let player = data.val()
                 let kills = player.kills;
                 let deaths = player.deaths;
+                let name = player.name;
                 let rawCoord = player.coord;
                 let coord = new Coord(rawCoord.x, rawCoord.y);
-                this.addPlayer(id, coord, kills, deaths);
+                this.addPlayer(id, name, coord, kills, deaths);
             }
         });
 
@@ -98,8 +111,9 @@ export default class Engine {
             let type = player.type;
             let kills = player.kills;
             let deaths = player.deaths;
+            let name = player.name
             let coord = new Coord(rawCoord.x, rawCoord.y);
-            this.updatePlayer(playerId, coord, type, kills, deaths);
+            this.updatePlayer(playerId, coord, type, kills, deaths, name);
 
             let bombs = player.bombs;
             if (bombs) {
@@ -146,10 +160,11 @@ export default class Engine {
 		}
     }
 
-    addPlayer(uid, coord, kills=0, deaths=0, isSelf=false) {
+    addPlayer(uid, name, coord, kills=0, deaths=0, isSelf=false) {
         let bomberman = new Bomberman(uid, coord, isSelf);
         bomberman.setKills(kills);
         bomberman.setDeaths(deaths);
+        bomberman.setName(name || uid);
 
         this.players.push(bomberman);
         this.playersById[uid] = bomberman;
@@ -162,12 +177,13 @@ export default class Engine {
         this.map.addObject(this.mapToTileCoord(coord), bomberman);
     }
 
-    updatePlayer(uid, coord, type, kills, deaths) {
+    updatePlayer(uid, coord, type, kills, deaths, name) {
         let player = this.playersById[uid];
         player.setCoord(coord);
         player.setType(type);
         player.setKills(kills);
         player.setDeaths(deaths);
+        player.setName(name);
     }
 
     getEmptyPoint() {

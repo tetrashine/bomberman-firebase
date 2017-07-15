@@ -16,7 +16,7 @@
     <title>Bomberman</title>
 </head>
 <html lang="en">
-	<body>
+    <body>
 
         <!-- PRE-LOGIN -->
         <dialog id="loginDialog" class="mdl-dialog">
@@ -49,39 +49,52 @@
 
         <!-- POST-LOGIN -->
         <div class="mdl-layout mdl-js-layout">
-          <header class="mdl-layout__header">
-            <div class="mdl-layout-icon"></div>
-            <div class="mdl-layout__header-row">
-                <span class="mdl-layout__title">Bomberman on Firebase</span>
-                <div class="mdl-layout-spacer"></div>
-                <!-- Colored raised button -->
-                <button id="signOutBtn" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent mdl-js-ripple-effect">
-                  Sign out <i class="material-icons">account_circle</i>
-                </button>
+            <header class="mdl-layout__header">
+                <div class="mdl-layout-icon"></div>
+                <div class="mdl-layout__header-row">
+                    <span class="mdl-layout__title">Bomberman on Firebase</span>
+                    <div class="mdl-layout-spacer"></div>
+                    <!-- Colored raised button -->
+                    <button id="signOutBtn" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent mdl-js-ripple-effect">
+                        Sign out <i class="material-icons">account_circle</i>
+                    </button>
+                </div>
+            </header>
+            <div class="mdl-layout__drawer">
             </div>
-          </header>
-          <div class="mdl-layout__drawer">
-          </div>
 
-          <div class="mdl-grid">
-              <div class="mdl-cell mdl-cell--12-col">
-                  <div id="board"></div>
-              </div>
+            <div class="mdl-grid">
+                <div class="mdl-cell mdl-cell--12-col">
+                    <div id="board"></div>
+                </div>
 
-              <div class="mdl-cell mdl-cell--12-col">
-                  <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                      <thead>
-                        <tr>
-                          <th>Name</th>
-                          <th>Kills</th>
-                          <th>Deaths</th>
-                        </tr>
-                      </thead>
-                      <tbody id='scoreboard'>
-                      </tbody>
-                  </table>
-              </div>
-          </div>
+
+                <div class="mdl-cell mdl-cell--12-col">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input class="mdl-textfield__input" type="text" id="name">
+                        <label class="mdl-textfield__label" for="sample3">Name (only 6 characters)</label>
+                    </div>
+                    <!-- Colored raised button -->
+                    <button id="nameBtn" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">
+                      Change
+                    </button>
+                </div>
+
+                <div class="mdl-cell mdl-cell--12-col">
+
+                    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Kills</th>
+                                <th>Deaths</th>
+                            </tr>
+                        </thead>
+                        <tbody id='scoreboard'>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
         <script src="https://www.gstatic.com/firebasejs/4.1.2/firebase.js"></script>

@@ -7,7 +7,7 @@ export default class Bomberman extends MapObject {
         this.reset();
 
         this.playerId = uid;
-        this.name = "Player " + uid;
+        this.name = uid;
         this.isSelf = isSelf;
 
         let image = new Image();
@@ -134,8 +134,9 @@ export default class Bomberman extends MapObject {
 
     getKills() { return this.kills; }
     getDeaths() { return this.deaths; }
-    getName() { return this.name; }
+    getName() { return this.name.substr(0, 6); }
 
     setKills(kills) { this.kills = kills; }
     setDeaths(deaths) { this.deaths = deaths; }
+    setName(name) { this.name = name; }
 }

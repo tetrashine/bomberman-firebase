@@ -62,7 +62,7 @@ export default class UI {
             canvas.drawImage(mapObj.getImage(), mapObj.getSourceX(), 0, mapObj.getWidth(), mapObj.getHeight(), mapObj.getX(), mapObj.getY(), mapObj.getWidth(), mapObj.getHeight());
             if (mapObj.getName) {
                 canvas.font = '14px sans-serif';
-                canvas.fillText(mapObj.getName(), mapObj.getWidth() / 2, mapObj.getHeight() / 2);
+                canvas.fillText(mapObj.getName(), mapObj.getX(), mapObj.getY() - 5);
             }
         });
     }
@@ -86,5 +86,15 @@ export default class UI {
         });
 
         $('#scoreboard').html(playerDivs);
+    }
+
+    updateUserName(name) {
+        $('#name').val(name);
+    }
+
+    registerNameChange(callback) {
+        $("#nameBtn").bind('click', function() {
+            callback($('#name').val());
+        });
     }
 }
