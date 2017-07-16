@@ -22,10 +22,15 @@ export default class Bomberman extends MapObject {
         this.denotateTime = 3;
         this.explodeDuration = 1;
 
+        // Game related
+		this.invisible		= true;
+		this.invisTiming	= 0;			// secs
+		this.invisLength	= 4;			// secs
+        this.invisDegree    = 0.5;            // 0 - 1
+        this.invisDirection = 1;            // 1 or -1
+
         // Animation
         this.totalFrames = 16;
-
-        this.setExplodable();
     }
 
     reset() {
@@ -45,6 +50,9 @@ export default class Bomberman extends MapObject {
     respawn() {
         this.deaths++;
         this.bombs = this.bombsMax;
+
+        this.invisible = true;
+        this.setNotExplodable();
     }
 
     plantBomb() {
@@ -132,9 +140,23 @@ export default class Bomberman extends MapObject {
         }
     }
 
+    invisibility(dt) {
+        if (this.invisible && ((this.invisTiming += dt) > this.invisLength)) {
+            this.invisTiming = 0;
+            this.invisible = false;
+
+            this.setExplodable();
+        }
+    }
+
     getKills() { return this.kills; }
     getDeaths() { return this.deaths; }
     getName() { return this.name.substr(0, 6); }
+    isInvisible() { return this.invisible; }
+
+    getInvisblityDegree() {
+        return 1;
+    }
 
     setKills(kills) { this.kills = kills; }
     setDeaths(deaths) { this.deaths = deaths; }

@@ -1,5 +1,6 @@
 
 import * as rap from 'raphael';
+import Bomberman from 'app/components/bomberman';
 
 export default class UI {
     constructor(id) {
@@ -59,12 +60,20 @@ export default class UI {
             return (mapObj.getX() > 0 && mapObj.getY() > 0);
         })
         .forEach((mapObj, i) => {
-            canvas.drawImage(mapObj.getImage(), mapObj.getSourceX(), 0, mapObj.getWidth(), mapObj.getHeight(), mapObj.getX(), mapObj.getY(), mapObj.getWidth(), mapObj.getHeight());
-            if (mapObj.getName) {
+            if (mapObj instanceof Bomberman) {
+                //draw name
                 canvas.font = '14px sans-serif';
                 this.canvas.fillStyle = 'black';
                 canvas.fillText(mapObj.getName(), mapObj.getX(), mapObj.getY() - 5);
+
+                if (mapObj.isInvisible()) {
+                    canvas.globalAlpha = mapObj.getInvisblityDegree();
+                }
             }
+
+            canvas.drawImage(mapObj.getImage(), mapObj.getSourceX(), 0, mapObj.getWidth(), mapObj.getHeight(), mapObj.getX(), mapObj.getY(), mapObj.getWidth(), mapObj.getHeight());
+
+            canvas.globalAlpha = 1;
         });
     }
 

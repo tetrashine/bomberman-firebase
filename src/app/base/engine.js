@@ -240,7 +240,8 @@ export default class Engine {
     }
 
     gameInterval(dt) {
-        this.movePlayer(dt);
+        this.playerInterval(dt);
+
         //save new player coord to firebase
         let player = this.player;
         if (player.hasUpdatedPosition()) {
@@ -416,6 +417,15 @@ export default class Engine {
             if (n1 > n2) return 1;
             return 0;
         }));
+    }
+
+    playerInterval(dt) {
+        this.movePlayer(dt);
+        this.setPlayerInvisibility(dt);
+    }
+
+    setPlayerInvisibility(dt) {
+        this.player.invisibility(dt);
     }
 
     movePlayer(dt) {

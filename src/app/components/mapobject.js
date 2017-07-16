@@ -27,6 +27,7 @@ export default class MapObject {
     explodable() { return this._explodable; }
     setNotWalkable() { this._walkable = false; }
     setExplodable() { this._explodable = true; }
+    setNotExplodable() { this._explodable = false; }
     getX() { return this.coord.getX(); }
     getY() { return this.coord.getY(); }
     addX(val) { this.coord.addX(val); }
