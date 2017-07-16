@@ -40,10 +40,7 @@ export default class UI {
         image.onload = imageLoaded;
 
         background.fillStyle = "#368A00";
-        background.beginPath();
-        background.rect(0, 0, this.getFullWidth(), this.getFullHeight());
-        background.closePath();
-        background.fill();
+        background.fillRect(0, 0, this.getFullWidth(), this.getFullHeight());
 
         function imageLoaded() {
             for (let w = 0; w < width; w++) {
@@ -58,10 +55,14 @@ export default class UI {
 
     drawMapObjects(mapObjs) {
         let canvas = this.canvas;
-        mapObjs.forEach((mapObj, i) => {
+        mapObjs.filter(mapObj => {
+            return (mapObj.getX() > 0 && mapObj.getY() > 0);
+        })
+        .forEach((mapObj, i) => {
             canvas.drawImage(mapObj.getImage(), mapObj.getSourceX(), 0, mapObj.getWidth(), mapObj.getHeight(), mapObj.getX(), mapObj.getY(), mapObj.getWidth(), mapObj.getHeight());
             if (mapObj.getName) {
                 canvas.font = '14px sans-serif';
+                this.canvas.fillStyle = 'black';
                 canvas.fillText(mapObj.getName(), mapObj.getX(), mapObj.getY() - 5);
             }
         });
@@ -71,8 +72,19 @@ export default class UI {
         this.canvas.clearRect(0, 0, this.getFullWidth(), this.getFullHeight());
     }
 
+    drawContinueScreen() {
+        this.canvas.fillStyle = "#333";
+        this.canvas.globalAlpha = 0.4;
+        this.canvas.fillRect(0, 0, this.getFullWidth(), this.getFullHeight());
+        this.canvas.globalAlpha = 1.0;
+
+        this.canvas.font = 'bold 20px sans-serif';
+        this.canvas.fillStyle = 'white';
+        this.canvas.fillText("Press Enter to respawn", 532, 272);
+    }
+
     writeFpsMessage(message) {
-        this.canvas.font        = '14px sans-serif';
+        this.canvas.font = '14px sans-serif';
         this.canvas.fillText(message, 10, 20);
     }
 

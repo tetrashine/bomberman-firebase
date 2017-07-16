@@ -33,9 +33,17 @@ export default class Engine {
     start() {
         if (this.isGameStarted()) { return; }
 
-        this.gameStarted = true;
+        this.restart();
 
         this.initGame();
+    }
+
+    restart() {
+        this.gameStarted = true;
+    }
+
+    stop() {
+        this.gameStarted = false;
     }
 
     initGame() {
@@ -195,6 +203,7 @@ export default class Engine {
         let thisTiming = new Date().getTime();
         let dt = ((thisTiming - this.getLastTiming()) / 1000);
 
+
         this.accumulatedTiming += dt;
         if (this.accumulatedTiming > this.stepInterval) {
             dt = this.accumulatedTiming;
@@ -213,8 +222,20 @@ export default class Engine {
             this.accumulatedTiming = 0;
         }
 
-        if (this.isGameStarted()) {
-            requestAnimationFrame(this.engineInterval);
+        requestAnimationFrame(this.engineInterval);
+    }
+
+    enterGame() {
+        if (!this.isGameStarted()) {
+            //get respawn coord
+            let coord = this.getEmptyPoint();
+            this.player.setCoord(coord);
+            this.map.addObject(this.mapToTileCoord(coord), this.player);
+
+            //save to db
+            this.db.savePlayerInfo(this.player);
+
+            this.restart();
         }
     }
 
@@ -272,12 +293,11 @@ export default class Engine {
                 this.db.updatePlayerBombs(player.getBombs());
 
             } else if (explodable instanceof Bomberman) {
-                let coord = this.getEmptyPoint();
+                //dead state
                 explodable.respawn();
-                explodable.setCoord(coord);
-                this.map.addObject(this.mapToTileCoord(coord), explodable);
-
+                explodable.setCoord(new Coord(-1, -1));
                 this.db.savePlayerInfo(explodable);
+                this.stop();
             }
         });
     }
@@ -371,6 +391,11 @@ export default class Engine {
         this.ui.drawMapObjects(this.bombs.concat(this.explosions));
         //draw players
         this.ui.drawMapObjects(this.players);
+
+        if (!this.isGameStarted()) {
+            //draw continue screen
+            this.ui.drawContinueScreen();
+        }
     }
 
     drawScoreboard() {
@@ -580,7 +605,7 @@ export default class Engine {
         if( !this.isGameStarted() ) { return; }
         let player = this.player;
 
-        if(player) {
+        if (player) {
             switch(direction)
             {
                 case Direction.UP:
