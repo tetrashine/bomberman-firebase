@@ -1,4 +1,5 @@
 
+import Coord from 'app/data/coordinates';
 import Explosion from 'app/components/explosion';
 
 export default class Map {
@@ -108,5 +109,19 @@ export default class Map {
         let x = coord.getX();
         let y = coord.getY();
         return (x < 0 || x > this.getWidth() || y < 0 || y > this.getHeight());
+    }
+
+    getRandomEmptyCoord() {
+        let x = 0;
+		let y = 0;
+        let coord;
+
+		do {
+			y = Math.floor(Math.random()*(this.getHeight()-2)) + 1;
+			x = Math.floor(Math.random()*(this.getWidth()-2)) + 1;
+            coord = new Coord(x, y);
+		} while ( !this.walkable(coord) );
+        
+        return coord;
     }
 }

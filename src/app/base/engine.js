@@ -195,8 +195,10 @@ export default class Engine {
     }
 
     getEmptyPoint() {
-        let val = 1 * this.ui.getCellPixel();
-        return new Coord(val, val);
+        //let val = 1 * this.ui.getCellPixel();
+        //return new Coord(val, val);
+
+        return this.tileToMapCoord(this.map.getRandomEmptyCoord());
     }
 
     engineInterval() {
