@@ -69,7 +69,7 @@ export default class Engine {
             });
 
             //start game
-            requestAnimationFrame(this.engineInterval);
+            window.requestAnimationFrame(this.engineInterval);
         });
     }
 
@@ -230,7 +230,7 @@ export default class Engine {
             this.accumulatedTiming = 0;
         }
 
-        requestAnimationFrame(this.engineInterval);
+        window.requestAnimationFrame(this.engineInterval);
     }
 
     enterGame() {
@@ -406,6 +406,8 @@ export default class Engine {
             //draw continue screen
             this.ui.drawContinueScreen();
         }
+
+        this.ui.render();
     }
 
     drawScoreboard() {
@@ -441,7 +443,7 @@ export default class Engine {
 
     movePlayer(dt) {
         let player = this.player;
-        let speed = Math.round(player.speed * dt) % (2*this.ui.getCellPixel());
+        let speed = Math.round(player.speed * dt) % (this.ui.getCellPixel() << 1);
 
         player.resetPositionUpdate();
 

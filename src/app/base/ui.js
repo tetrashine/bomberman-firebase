@@ -9,26 +9,32 @@ export default class UI {
         this.cellPixel = 32;
 
         let container = document.getElementById(id);
-        this.canvas = document.createElement('canvas');
+        this.screenCanvas = document.createElement('canvas');
+        this.preRenderCanvas = document.createElement('canvas');
         this.background = document.createElement('canvas');
-        this.canvas.width = this.background.width = this.fullWidth;
-        this.canvas.height = this.background.height = this.fullHeight;
+        this.screenCanvas.width = this.preRenderCanvas.width = this.background.width = this.fullWidth;
+        this.screenCanvas.height = this.preRenderCanvas.height = this.background.height = this.fullHeight;
 
-        this.canvas.style.position = "absolute";
-        this.canvas.style.zIndex = 1;
+        this.screenCanvas.style.position = "absolute";
+        this.screenCanvas.style.zIndex = 1;
         this.background.style.position = "relative";
         this.background.style.zIndex = 0;
 
-        container.appendChild(this.canvas);
+        container.appendChild(this.screenCanvas);
         container.appendChild(this.background);
 
-        this.canvas = this.canvas.getContext("2d");
+        this.canvas = this.preRenderCanvas.getContext("2d");
         this.background = this.background.getContext("2d");
+        this.screenCanvas = this.screenCanvas.getContext("2d");
     }
 
     getFullWidth() { return this.fullWidth; }
     getFullHeight() { return this.fullHeight; }
     getCellPixel() { return this.cellPixel; }
+
+    render() {
+        this.screenCanvas.drawImage(this.preRenderCanvas, 0, 0, this.getFullWidth(), this.getFullHeight());
+    }
 
     drawMap(map) {
         let width = map.getWidth();
@@ -63,7 +69,7 @@ export default class UI {
             if (mapObj instanceof Bomberman) {
                 //draw name
                 canvas.font = '14px sans-serif';
-                this.canvas.fillStyle = 'black';
+                canvas.fillStyle = 'black';
                 canvas.fillText(mapObj.getName(), mapObj.getX(), mapObj.getY() - 5);
 
                 if (mapObj.isInvisible()) {
@@ -71,14 +77,17 @@ export default class UI {
                 }
             }
 
-            canvas.drawImage(mapObj.getImage(), mapObj.getSourceX(), 0, mapObj.getWidth(), mapObj.getHeight(), mapObj.getX(), mapObj.getY(), mapObj.getWidth(), mapObj.getHeight());
+            canvas.drawImage(mapObj.getImage(), mapObj.getSourceX(), 0, 32, 32, mapObj.getX(), mapObj.getY(), 32, 32);
 
             canvas.globalAlpha = 1;
         });
     }
 
     clearScreen() {
-        this.canvas.clearRect(0, 0, this.getFullWidth(), this.getFullHeight());
+        let width = this.getFullWidth();
+        let height = this.getFullHeight();
+        this.canvas.clearRect(0, 0, width, height);
+        this.screenCanvas.clearRect(0, 0, width, height);
     }
 
     drawContinueScreen() {
@@ -93,8 +102,8 @@ export default class UI {
     }
 
     writeFpsMessage(message) {
-        this.canvas.font = '14px sans-serif';
-        this.canvas.fillText(message, 10, 20);
+        //this.canvas.font = '14px sans-serif';
+        //this.canvas.fillText(message, 10, 20);
     }
 
     drawScoreboard(players) {
