@@ -120,8 +120,9 @@ export default class Engine {
             let kills = player.kills;
             let deaths = player.deaths;
             let name = player.name
+            let killedBy = player.killedBy;
             let coord = new Coord(rawCoord.x, rawCoord.y);
-            this.updatePlayer(playerId, coord, type, kills, deaths, name);
+            this.updatePlayer(playerId, coord, type, kills, deaths, name, killedBy);
 
             let bombs = player.bombs;
             if (bombs) {
@@ -185,13 +186,18 @@ export default class Engine {
         this.map.addObject(this.mapToTileCoord(coord), bomberman);
     }
 
-    updatePlayer(uid, coord, type, kills, deaths, name) {
+    updatePlayer(uid, coord, type, kills, deaths, name, killedBy) {
         let player = this.playersById[uid];
         player.setCoord(coord);
         player.setType(type);
         player.setKills(kills);
         player.setDeaths(deaths);
         player.setName(name);
+
+        if (killedBy === this.db.getMyId()) {
+            this.player.setKills(this.player.getKills() + 1);
+            this.db.savePlayerInfo(this.player);
+        }
     }
 
     getEmptyPoint() {
@@ -267,12 +273,12 @@ export default class Engine {
                 this.map.removeObject(this.mapToTileCoord(explosion.getCoord()), explosion);
             } else {
                 // explode location
-                this.explodeLocation(explosion.getCoord());
+                this.explodeLocation(explosion.getCoord(), explosion.getPlayerId());
             }
         }
     }
 
-    explodeLocation(coord) {
+    explodeLocation(coord, bomberId) {
         let player = this.player;
         let playerId = player.getId();
         let explodables = this.map.removeExplodables(this.mapToTileCoord(coord));
@@ -297,9 +303,10 @@ export default class Engine {
 
             } else if (explodable instanceof Bomberman) {
                 //dead state
+                explodable.setKillerId(bomberId);
                 explodable.respawn();
                 explodable.setCoord(new Coord(-1, -1));
-                this.db.savePlayerInfo(explodable);
+                this.db.savePlayerKilledInfo(explodable);
                 this.stop();
             }
         });
@@ -422,8 +429,10 @@ export default class Engine {
     }
 
     playerInterval(dt) {
-        this.movePlayer(dt);
-        this.setPlayerInvisibility(dt);
+        if (this.isGameStarted()) {
+            this.movePlayer(dt);
+            this.setPlayerInvisibility(dt);
+        }
     }
 
     setPlayerInvisibility(dt) {
@@ -455,6 +464,7 @@ export default class Engine {
 
     move(player, direction, speed) {
         let oriTopLeft = player.getCoord();
+        let oldCoord = oriTopLeft.copy();
         let topLeft = oriTopLeft.copy();
         topLeft = this.moveByDirection(topLeft, direction, speed);
 
@@ -567,7 +577,6 @@ export default class Engine {
 
         // This is to check that the player has moved enough
 		// to change a slot to another slot in the map.
-        let oldCoord = oriTopLeft.copy();
         let newCoord = topLeft.copy();
         oldCoord.addX(player.getWidth() / 2).addY(player.getHeight() / 2);
         newCoord.addX(player.getWidth() / 2).addY(player.getHeight() / 2);

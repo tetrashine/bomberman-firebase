@@ -61,6 +61,17 @@ export default class Firebase extends Db {
         });
     }
 
+    savePlayerKilledInfo(player) {
+        this.database.ref(PLAYERS_PATH + this.getMyId()).set({
+            name: player.getName(),
+            coord: player.getCoord(),
+            type: player.getType(),
+            kills: player.getKills(),
+            deaths: player.getDeaths(),
+            killedBy: player.getKilledBy()
+        });
+    }
+
     updatePlayerBombs(bombs) {
         let update = {};
         update[PLAYERS_PATH + this.getMyId() + '/bombs'] = bombs;
