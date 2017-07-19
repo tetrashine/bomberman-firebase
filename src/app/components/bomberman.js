@@ -157,7 +157,7 @@ export default class Bomberman extends MapObject {
     getKilledBy() { return this.killedBy; }
 
     getInvisblityDegree() {
-        return 1;
+        return 1 - (this.invisTiming % 1);
     }
 
     setKillerId(id) { this.killedBy = id; }
