@@ -1,6 +1,7 @@
 
 import * as rap from 'raphael';
 import Bomberman from 'app/components/bomberman';
+import ImageManager from 'app/base/imagemanager';
 
 export default class UI {
     constructor(id) {
@@ -26,6 +27,8 @@ export default class UI {
         this.canvas = this.preRenderCanvas.getContext("2d");
         this.background = this.background.getContext("2d");
         this.screenCanvas = this.screenCanvas.getContext("2d");
+
+        this.imageManager = new ImageManager();
     }
 
     getFullWidth() { return this.fullWidth; }
@@ -77,7 +80,25 @@ export default class UI {
                 }
             }
 
-            canvas.drawImage(mapObj.getImage(), mapObj.getSourceX(), 0, 32, 32, mapObj.getX(), mapObj.getY(), 32, 32);
+            let a = [
+                [document.getElementById("self"), Image.Self],
+                [document.getElementById("opp"), Image.Opponent],
+                [document.getElementById("bomb"), Image.Bomb],
+                [document.getElementById("explosionCenter"), Image.ExplosionCenter],
+                [document.getElementById("explosionUp"), Image.ExplosionUp],
+                [document.getElementById("explosionRight"), Image.ExplosionRight],
+                [document.getElementById("explosionDown"), Image.ExplosionDown],
+                [document.getElementById("explosionLeft"), Image.ExplosionLeft],
+                [document.getElementById("explosionUpDownLink"), Image.ExplosionUpDownLink],
+                [document.getElementById("explosionLeftRightLink"), Image.ExplosionLeftRightLink]
+            ];
+
+            //canvas.drawImage(this.imageManager.getCanvas(), mapObj.getSourceX(), mapObj.getImageIndex() * 32, 32, 32, mapObj.getX(), mapObj.getY(), 32, 32);
+            //canvas.putImageData(this.imageManager.getImageData(mapObj.getImageIndex(), mapObj.getSourceX()), parseInt(mapObj.getX()), parseInt(mapObj.getY()));
+
+
+            //canvas.putImageData(getBase64Image(a[mapObj.getImageIndex()][0]), mapObj.getSourceX(), 0, 32, 32, mapObj.getX(), mapObj.getY(), 32, 32);
+            canvas.putImageData(this.imageManager.getImageData(mapObj.getImageIndex(), mapObj.getSourceX()), parseInt(mapObj.getX()), parseInt(mapObj.getY()));
 
             canvas.globalAlpha = 1;
         });
@@ -102,8 +123,8 @@ export default class UI {
     }
 
     writeFpsMessage(message) {
-        //this.canvas.font = '14px sans-serif';
-        //this.canvas.fillText(message, 10, 20);
+        this.canvas.font = '14px sans-serif';
+        this.canvas.fillText(message, 10, 20);
     }
 
     drawScoreboard(players) {

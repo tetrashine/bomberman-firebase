@@ -1,3 +1,4 @@
+import Image from 'app/data/image';
 import MapObject from 'app/components/mapobject';
 
 export default class Explosion extends MapObject {
@@ -31,37 +32,32 @@ export default class Explosion extends MapObject {
     }
 
     updateImage() {
-        let image = new Image();
-        image.src = this.getExplosionImage(this.directionIndex, this.isEnd);
-        this.image =  image;
+        this.image = this.getExplosionImage(this.directionIndex, this.isEnd);
     }
 
     getExplosionImage(directionIndex, isEnd) {
-        let img = '';
+        let img = Image.ExplosionCenter;
         if (directionIndex === -1 || isEnd) {
             switch(directionIndex) {
                 case -1: //center
-                    img = '/img/explosionCenter.png';
+                    img = Image.ExplosionCenter;
                     break;
                 case 0: //up
-                    img = '/img/explosionUp.png';
+                    img = Image.ExplosionUp;
                     break;
                 case 1: //right
-                    img = '/img/explosionRight.png';
+                    img = Image.ExplosionRight;
                     break;
                 case 2: //down
-                    img = '/img/explosionDown.png';
+                    img = Image.ExplosionDown;
                     break;
                 case 3: //left
-                    img = '/img/explosionLeft.png';
+                    img = Image.ExplosionLeft;
                     break;
             }
         } else {
             //links
-            img = (directionIndex % 2 === 0) ?
-                    "/img/explosionUpDownLink.png"
-                    :
-                    "/img/explosionLeftRightLink.png";
+            img = (directionIndex % 2 === 0) ? Image.ExplosionUpDownLink : Image.ExplosionLeftRightLink;
         }
 
         return img;

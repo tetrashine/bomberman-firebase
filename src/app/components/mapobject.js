@@ -36,7 +36,7 @@ export default class MapObject {
     getHeight() { return this.height; }
     getCoord() { return this.coord; }
 
-    getImage() { return this.image; }
+    getImageIndex() { return this.image; }
 
     animate(dt) {
         //cumulative time since last animation

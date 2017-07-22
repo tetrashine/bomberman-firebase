@@ -6,7 +6,9 @@ import Bomberman from 'app/components/bomberman';
 import Direction from 'app/data/direction';
 import Explosion from 'app/components/explosion';
 
+
 export default class Engine {
+
     constructor(ui, db) {
         this.ui = ui;
         this.db = db;
@@ -18,7 +20,6 @@ export default class Engine {
         this.explosions = [];
         this.gameStarted = false;
         this.accumulatedTiming = 0;
-        this.stepInterval = 0.016666666666667;
         this.setLastTiming();
 
         this.engineInterval = this.engineInterval.bind(this);
@@ -208,27 +209,22 @@ export default class Engine {
     }
 
     engineInterval() {
+        let stepInterval = 0.166666666666667;
         let thisTiming = new Date().getTime();
         let dt = ((thisTiming - this.getLastTiming()) / 1000);
+        let framesPerSec = 1 / dt;
+        this.ui.writeFpsMessage("FPS:" + framesPerSec);
 
+        //game interval
+        this.gameInterval(dt);
 
-        this.accumulatedTiming += dt;
-        if (this.accumulatedTiming > this.stepInterval) {
-            dt = this.accumulatedTiming;
+        //animation
+        this.animateInterval(dt);
 
-            //game interval
-            this.gameInterval(dt);
+        //draw game
+        this.drawInterval();
 
-            //animation
-            this.animateInterval(dt);
-
-            //draw game
-            this.drawInterval(dt);
-
-            this.setLastTiming();
-
-            this.accumulatedTiming = 0;
-        }
+        this.setLastTiming();
 
         window.requestAnimationFrame(this.engineInterval);
     }
@@ -365,16 +361,9 @@ export default class Engine {
 
     addExplosion(playerId, coord, str, duration, directionIndex, isEnd) {
         let tileCoord = this.mapToTileCoord(coord);
-        if (this.map.hasExplosion(tileCoord)) {
-            let explosion = this.map.getMapObjs(tileCoord).find(obj => {
-                return obj instanceof Explosion;
-            });
-            explosion.update(directionIndex, isEnd);
-        } else {
-            let explosion = new Explosion(playerId, coord, str, duration, directionIndex, isEnd);
-            this.explosions.push(explosion);
-            this.map.addObject(tileCoord, explosion);
-        }
+        let explosion = new Explosion(playerId, coord, str, duration, directionIndex, isEnd);
+        this.explosions.push(explosion);
+        this.map.addObject(tileCoord, explosion);
     }
 
     animateInterval(dt) {
@@ -385,18 +374,16 @@ export default class Engine {
         });
     }
 
-    drawInterval(dt) {
-        this.drawGame(dt);
+    drawInterval() {
+        this.drawGame();
 
         this.drawScoreboard();
     }
 
-    drawGame(dt) {
+    drawGame() {
         //clear ui
         this.ui.clearScreen();
-        //draw fps
-        let framePerSec = Math.floor(1/dt);
-        this.ui.writeFpsMessage("FPS:" + framePerSec);
+
         //draw bombs & explosion
         this.ui.drawMapObjects(this.bombs.concat(this.explosions));
         //draw players
@@ -443,7 +430,7 @@ export default class Engine {
 
     movePlayer(dt) {
         let player = this.player;
-        let speed = Math.round(player.speed * dt) % (this.ui.getCellPixel() << 1);
+        let speed = Math.round(player.getSpeed() * dt) % (this.ui.getCellPixel() << 1);
 
         player.resetPositionUpdate();
 

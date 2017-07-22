@@ -1,4 +1,5 @@
 import Bomb from 'app/components/bomb';
+import Image from 'app/data/image';
 import MapObject from 'app/components/mapobject';
 
 export default class Bomberman extends MapObject {
@@ -11,9 +12,10 @@ export default class Bomberman extends MapObject {
         this.isSelf = isSelf;
         this.killedBy = '';
 
-        let image = new Image();
-        image.src = isSelf ? "/img/selfbomberman.png" : "/img/oppbomberman.png";
-        this.image = image;
+        //let image = new Image();
+        //image.src = isSelf ? "/img/selfbomberman.png" : "/img/oppbomberman.png";
+        //this.image = image;
+        this.image = isSelf ? Image.Self : Image.Opponent;
 
         // Bomb related
         this.bombsArr = [];
@@ -40,7 +42,7 @@ export default class Bomberman extends MapObject {
         this.deaths = 0;
 
         // Movement related
-		this.speed		= 150;
+		this.speed		= 300;
 		this.up			= false;
 		this.down		= false;
 		this.left		= false;

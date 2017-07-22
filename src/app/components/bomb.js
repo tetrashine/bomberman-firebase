@@ -1,3 +1,4 @@
+import Image from 'app/data/image';
 import MapObject from 'app/components/mapobject';
 
 export default class Bomb extends MapObject {
@@ -7,9 +8,10 @@ export default class Bomb extends MapObject {
         this.bombId = bombId;
         this.playerId = uid;
 
-        let image = new Image();
+        /*let image = new Image();
         image.src = "/img/bomb.png";
-        this.image = image;
+        this.image = image;*/
+        this.image = Image.Bomb;
 
         this.str = str;
         this.coord = coord;
