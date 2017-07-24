@@ -40,7 +40,10 @@ export default class Map {
     getMap() { return this.map; }
     getMapVal(coord) { return this.map[coord.getY()][coord.getX()]; }
     getMapObjs(coord) { return this.mapObjs[coord.getY()][coord.getX()]; }
-    addObject(coord, obj) { this.mapObjs[coord.getY()][coord.getX()].push(obj); }
+    addObject(coord, obj) {
+        if (this.beyondMap(coord)) { return false; }
+        this.mapObjs[coord.getY()][coord.getX()].push(obj);
+    }
     removeObjects(coord) {
         let objs = this.mapObjs[coord.getY()][coord.getX()];
         this.mapObjs[coord.getY()][coord.getX()] = [];
@@ -121,7 +124,7 @@ export default class Map {
 			x = Math.floor(Math.random()*(this.getWidth()-2)) + 1;
             coord = new Coord(x, y);
 		} while ( !this.walkable(coord) );
-        
+
         return coord;
     }
 }

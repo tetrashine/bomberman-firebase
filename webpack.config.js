@@ -6,7 +6,7 @@ const TARGET = process.env.npm_lifecycle_event;
 
 const PATHS = {
 	app: path.join(__dirname, 'src'),
-	build: path.join(__dirname, 'dist')
+	build: path.join(__dirname, 'public')
 };
 
 const common = {

@@ -51,14 +51,15 @@ export default class Engine {
         //read for user info before starting the game
         let userId = this.db.getMyId();
         this.db.getPlayerInfo(userId, (data) => {
+            let name = data && data.name || 'Player';
             //ui show username
-            this.ui.updateUserName(data.name);
+            this.ui.updateUserName(name);
             //draw basemap
             this.ui.drawMap(this.map);
             //register to add opponents
             this.registerOpponentEvents();
             //add self
-            this.addPlayer(userId, data.name, this.getEmptyPoint(), 0, 0, true);
+            this.addPlayer(userId, name, this.getEmptyPoint(), 0, 0, true);
             //update player location
             this.db.savePlayerInfo(this.player);
             //clear past bombs information
